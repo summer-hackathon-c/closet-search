@@ -28,13 +28,20 @@ cp .env.example .env
 
 ### 3.Django プロジェクトを起動
 
+以下のコマンドで
+
 以下のコマンドでコンテナをビルド＆起動します：
 
 ```bash
 docker-compose up --build
 ```
 
-### 4.ブラウザで動作確認
+### 4.マイグレーションの適用
+```bash
+docker-compose exec django python manage.py migrate
+```
+
+### 5.ブラウザで動作確認
 以下の URL にアクセスします：
 
 👉 http://localhost:8000
