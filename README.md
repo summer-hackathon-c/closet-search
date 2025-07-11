@@ -14,7 +14,7 @@ Django + Docker を使った開発環境です。
 ### 1. リポジトリをクローン
 
 ```bash
-git clone https://github.com/iwaki-toshiyuki/closet-search.git
+git clone git@github.com:summer-hackathon-c/closet-search.git
 cd closet-search
 ```
 
