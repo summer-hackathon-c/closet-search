@@ -26,6 +26,11 @@ cd closet-search
 cp .env.example .env
 ```
 
+Windowsの場合は
+```bash
+copy .env.example .env
+```
+
 ### 3.Django プロジェクトを起動
 
 以下のコマンドでコンテナをビルド＆起動します：
