@@ -1,0 +1,10 @@
+  {
+  "[python]": {
+    //使用するフォーマッタを Ruff に指定
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    //入力時に自動フォーマット（例: 改行時）
+    "editor.formatOnType": true,
+    //保存時に自動フォーマット
+    "editor.formatOnSave": true
+    }
+  }
