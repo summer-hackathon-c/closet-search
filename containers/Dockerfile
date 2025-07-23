@@ -9,3 +9,7 @@ WORKDIR /root/workspace
 RUN pip install --upgrade pip\
     && pip install --upgrade setuptools\
     && pip install -r requirements.txt
+
+# ./containers/Dockerfile の末尾に追記
+RUN pip install --no-cache-dir "ruff[format]"
+
