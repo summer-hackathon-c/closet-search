@@ -45,3 +45,17 @@ docker-compose exec django python manage.py migrate
 👉 http://localhost:8000
 
 「The install worked successfully!」と表示されれば、セットアップ成功です。
+
+### 6.Ruffコマンド
+
+Lint(コードチェック)
+
+```
+make lint
+```
+
+Format（コード整形）
+
+```
+make format
+```
