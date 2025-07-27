@@ -3,14 +3,14 @@ name: Auto Deploy to style-log.com (Docker Compose)
 on:
   push:
     branches:
-      - main  # mainブランチのみ自動デプロイ
+      - main # mainブランチのみ自動デプロイ
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. GitHubのリポジトリをチェックアウト
+      # 1. GitHubリポジトリをチェックアウト
       - name: Checkout code
         uses: actions/checkout@v3
 
@@ -20,25 +20,28 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.DEPLOY_KEY }}
 
-      # 3. Bastion経由でPrivate EC2にSSH接続してデプロイ
+      # 3. SSH Configファイルを作成（ローカルの~/.ssh/configを再現）
+      - name: Setup SSH Config
+        run: |
+          mkdir -p ~/.ssh
+          echo "Host bastion" >> ~/.ssh/config
+          echo "  HostName ${{ secrets.BASTION_HOST }}" >> ~/.ssh/config
+          echo "  User ${{ secrets.DEPLOY_USER }}" >> ~/.ssh/config
+          echo "Host private1" >> ~/.ssh/config
+          echo "  HostName ${{ secrets.PRIVATE_HOST }}" >> ~/.ssh/config
+          echo "  User ${{ secrets.DEPLOY_USER }}" >> ~/.ssh/config
+          echo "  ProxyJump bastion" >> ~/.ssh/config
+          chmod 600 ~/.ssh/config
+          cat ~/.ssh/config
+
+      # 4. デプロイ処理（ssh private1 と同じ感覚）
       - name: Deploy via Bastion
         run: |
-          ssh -i ~/.ssh/id_rsa \
-              -o StrictHostKeyChecking=no \
-              -o ProxyJump=${{ secrets.DEPLOY_USER }}@${{ secrets.BASTION_HOST }} \
-              ${{ secrets.DEPLOY_USER }}@${{ secrets.PRIVATE_HOST }} << 'EOF'
-            set -e  # エラーが発生したら停止
-
-            echo ">>> Move to project directory"
+          ssh -o StrictHostKeyChecking=no private1 << 'EOF'
+            set -e
             cd /home/ec2-user/closet-search
-
-            echo ">>> Fetching latest code from main branch"
             git fetch --all
             git reset --hard origin/main
-
-            echo ">>> Building and restarting Docker containers"
             sudo docker compose down
             sudo docker compose up --build -d
-
-            echo ">>> Deployment completed!"
           EOF
