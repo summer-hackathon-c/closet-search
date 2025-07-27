@@ -1,0 +1,37 @@
+name: Auto Deploy to style-log.com
+
+on:
+  push:
+    branches:
+      - main  # mainブランチのみ実行
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.DEPLOY_KEY }}
+
+      - name: Deploy to server
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} << 'EOF'
+            cd /var/www/style-log
+            git fetch --all
+            git reset --hard origin/main
+            # Python環境 (venv) 再構築
+            if [ -f "requirements.txt" ]; then
+              python3.9 -m venv venv
+              source venv/bin/activate
+              pip install --upgrade pip
+              pip install -r requirements.txt
+            fi
+            # 必要ならサービス再起動
+            sudo systemctl restart nginx
+            sudo systemctl restart gunicorn || true
+          EOF
