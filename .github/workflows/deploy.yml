@@ -20,13 +20,14 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.DEPLOY_KEY }}
 
-      # 3. Bastion経由でデプロイ
+      # 3. Bastion経由でPrivate EC2にSSH接続してデプロイ
       - name: Deploy via Bastion
         run: |
-          ssh -o StrictHostKeyChecking=no \
+          ssh -i ~/.ssh/id_rsa \
+              -o StrictHostKeyChecking=no \
               -o ProxyJump=${{ secrets.DEPLOY_USER }}@${{ secrets.BASTION_HOST }} \
               ${{ secrets.DEPLOY_USER }}@${{ secrets.PRIVATE_HOST }} << 'EOF'
-            set -e  # エラー時に停止
+            set -e  # エラーが発生したら停止
 
             echo ">>> Move to project directory"
             cd /home/ec2-user/closet-search
