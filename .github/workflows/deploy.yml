@@ -3,14 +3,14 @@ name: Auto Deploy to style-log.com (Docker Compose)
 on:
   push:
     branches:
-      - main # mainブランチのみ自動デプロイ
+      - main  # mainブランチでのみ実行
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. GitHubリポジトリをチェックアウト
+      # 1. GitHubのリポジトリをチェックアウト
       - name: Checkout code
         uses: actions/checkout@v3
 
@@ -20,7 +20,7 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.DEPLOY_KEY }}
 
-      # 3. SSH Configファイルを作成（ローカルの~/.ssh/configを再現）
+      # 3. SSH Configを作成（ローカルの~/.ssh/configを再現）
       - name: Setup SSH Config
         run: |
           mkdir -p ~/.ssh
@@ -34,14 +34,33 @@ jobs:
           chmod 600 ~/.ssh/config
           cat ~/.ssh/config
 
-      # 4. デプロイ処理（ssh private1 と同じ感覚）
+      # 4. Bastionへの接続テスト
+      - name: Test SSH Connection to Bastion
+        run: |
+          echo ">>> Testing connection to Bastion"
+          ssh -o StrictHostKeyChecking=no bastion "echo 'Bastion OK'"
+
+      # 5. Private EC2への接続テスト
+      - name: Test SSH Connection to Private EC2
+        run: |
+          echo ">>> Testing connection to private1 (via Bastion)"
+          ssh -o StrictHostKeyChecking=no private1 "echo 'Private1 OK'"
+
+      # 6. デプロイ処理
       - name: Deploy via Bastion
         run: |
           ssh -o StrictHostKeyChecking=no private1 << 'EOF'
-            set -e
+            set -e  # エラー時に停止
+            echo ">>> Move to project directory"
             cd /home/ec2-user/closet-search
+
+            echo ">>> Fetching latest code from main branch"
             git fetch --all
             git reset --hard origin/main
+
+            echo ">>> Building and restarting Docker containers"
             sudo docker compose down
             sudo docker compose up --build -d
+
+            echo ">>> Deployment completed!"
           EOF
