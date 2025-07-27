@@ -1,37 +1,64 @@
 name: Auto Deploy to style-log.com
 
+# ----------------------------
+# main ブランチへの push をトリガーにデプロイを実行
+# ----------------------------
 on:
   push:
     branches:
-      - main  # mainブランチのみ実行
+      - main  # mainブランチのみ自動デプロイ
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest  # GitHub Actionsの実行環境（Linux最新）
 
     steps:
+      # ----------------------------
+      # 1. リポジトリのソースコードをチェックアウト
+      # ----------------------------
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # ----------------------------
+      # 2. SSH接続の設定
+      #    - GitHub Secrets に登録した DEPLOY_KEY を使う
+      #    - webfactory/ssh-agent が秘密鍵をロード
+      # ----------------------------
       - name: Setup SSH
         uses: webfactory/ssh-agent@v0.7.0
         with:
           ssh-private-key: ${{ secrets.DEPLOY_KEY }}
 
+      # ----------------------------
+      # 3. サーバーにSSH接続し、デプロイ処理を実行
+      # ----------------------------
       - name: Deploy to server
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} << 'EOF'
+            # ----------------------------
+            # サーバー上でデプロイするディレクトリへ移動
+            # ----------------------------
             cd /var/www/style-log
+
+            # ----------------------------
+            # Gitリポジトリを最新のmainブランチに更新
+            # ----------------------------
             git fetch --all
             git reset --hard origin/main
-            # Python環境 (venv) 再構築
+
+            # ----------------------------
+            # Python 仮想環境のセットアップと依存関係のインストール
+            # ----------------------------
             if [ -f "requirements.txt" ]; then
-              python3.9 -m venv venv
-              source venv/bin/activate
-              pip install --upgrade pip
-              pip install -r requirements.txt
+              python3.9 -m venv venv              # 仮想環境作成
+              source venv/bin/activate            # 仮想環境を有効化
+              pip install --upgrade pip           # pip を最新版に更新
+              pip install -r requirements.txt     # 依存ライブラリをインストール
             fi
-            # 必要ならサービス再起動
+
+            # ----------------------------
+            # Webサーバーやアプリケーションの再起動
+            # ----------------------------
             sudo systemctl restart nginx
-            sudo systemctl restart gunicorn || true
+            sudo systemctl restart gunicorn || true  # Gunicornがあれば再起動
           EOF
