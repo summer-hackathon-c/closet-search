@@ -12,6 +12,10 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 
+"""
+import os
+"""
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -38,6 +42,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    # "storages",
 ]
 
 MIDDLEWARE = [
@@ -88,6 +93,24 @@ DATABASES = {
         },
     }
 }
+"""
+
+"""S3の設定
+AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
+AWS_S3_REGION_NAME = 'ap-northeast-1'
+AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
+"""
+
+"""静的ファイルの設定
+STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/static/"
+STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+"""
+
+"""メディアファイルの設定
+MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/media/"
+DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
 """
 
 DATABASES = {
