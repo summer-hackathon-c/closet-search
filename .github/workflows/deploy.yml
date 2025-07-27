@@ -14,17 +14,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # 2. SSH接続のため秘密鍵を設定
+      # 2. SSH鍵を設定
       - name: Setup SSH
         uses: webfactory/ssh-agent@v0.7.0
         with:
           ssh-private-key: ${{ secrets.DEPLOY_KEY }}
 
-      # 3. サーバーでデプロイ処理を実行
-      - name: Deploy to server (with Docker Compose)
+      # 3. Bastion経由でデプロイ
+      - name: Deploy via Bastion
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} << 'EOF'
-            set -e  # エラーが発生したらスクリプトを停止
+          ssh -o StrictHostKeyChecking=no \
+              -o ProxyJump=${{ secrets.DEPLOY_USER }}@${{ secrets.BASTION_HOST }} \
+              ${{ secrets.DEPLOY_USER }}@${{ secrets.PRIVATE_HOST }} << 'EOF'
+            set -e  # エラー時に停止
 
             echo ">>> Move to project directory"
             cd /home/ec2-user/closet-search
@@ -34,7 +36,6 @@ jobs:
             git reset --hard origin/main
 
             echo ">>> Building and restarting Docker containers"
-            # 旧コンテナを停止してから再ビルド＆起動
             sudo docker compose down
             sudo docker compose up --build -d
 
