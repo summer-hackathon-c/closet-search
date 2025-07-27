@@ -3,7 +3,7 @@ name: Auto Deploy to style-log.com (Docker Compose)
 on:
   push:
     branches:
-      - main
+      - main # mainブランチのみ自動デプロイ
 
 jobs:
   deploy:
