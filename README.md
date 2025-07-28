@@ -40,7 +40,7 @@ copy .env.example .env
 docker compose -f docker-compose.dev.yml up --build -d
 ```
 
-開発環境用
+本番環境用
 ```bash
 docker compose -f docker-compose.prod.yml up --build -d
 ```
