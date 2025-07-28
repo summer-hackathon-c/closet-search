@@ -1,0 +1,17 @@
+FROM python:3.9.11
+
+ENV PYTHONUNBUFFERED 1
+
+RUN mkdir -p /root/workspace
+COPY requirements.prod.txt /root/workspace/
+WORKDIR /root/workspace
+
+# 本番用パッケージのみインストール
+RUN pip install --upgrade pip \
+    && pip install --upgrade setuptools \
+    && pip install -r requirements.prod.txt
+
+COPY . .
+
+# gunicorn で起動（requirements.prod.txt に gunicorn が含まれている前提）
+CMD ["gunicorn", "closet_search.wsgi:application", "--bind", "0.0.0.0:8000"]

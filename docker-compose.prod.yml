@@ -5,7 +5,7 @@ services:
   django:
     build:
       context: ./containers    # Dockerfileがあるディレクトリまでの相対パス
-      dockerfile: Dockerfile   # Dockerfileのファイル名
+      dockerfile: Dockerfile.prod   # Dockerfileのファイル名
 
     # 作成するコンテナ名の指定
     container_name: django
