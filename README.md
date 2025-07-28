@@ -36,22 +36,17 @@ copy .env.example .env
 以下のコマンドでコンテナをビルド＆起動します：
 
 ```bash
-docker-compose up --build
+docker compose up --build -d
 ```
 
-### 4.マイグレーションの適用
-```bash
-docker-compose exec django python manage.py migrate
-```
-
-### 5.ブラウザで動作確認
+### 4.ブラウザで動作確認
 以下の URL にアクセスします：
 
 👉 http://localhost:8000
 
 「The install worked successfully!」と表示されれば、セットアップ成功です。
 
-### 6.Ruffコマンド
+### 5.Ruffコマンド
 
 Lint(コードチェック& 自動修正)
 
