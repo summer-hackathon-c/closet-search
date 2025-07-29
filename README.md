@@ -35,8 +35,14 @@ copy .env.example .env
 
 以下のコマンドでコンテナをビルド＆起動します：
 
+開発環境用
 ```bash
-docker compose up --build -d
+docker compose -f docker-compose.dev.yml up --build -d
+```
+
+本番環境用
+```bash
+docker compose -f docker-compose.prod.yml up --build -d
 ```
 
 ### 4.ブラウザで動作確認
