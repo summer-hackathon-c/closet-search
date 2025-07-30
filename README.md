@@ -1,4 +1,4 @@
-# closet-search
+# Style Log
 
 Django + Docker を使った開発環境です。
 
@@ -51,6 +51,18 @@ docker compose -f docker-compose.prod.yml up --build -d
 👉 http://localhost:8000
 
 「The install worked successfully!」と表示されれば、セットアップ成功です。
+
+### 5.Djangoプロジェクト削除
+
+開発環境用
+```bash
+docker compose -f docker-compose.dev.yml down
+```
+
+本番環境用
+```bash
+docker compose -f docker-compose.prod.yml down
+```
 
 ### 5.Ruffコマンド
 
