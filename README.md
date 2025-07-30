@@ -1,4 +1,4 @@
-# closet-search
+# Style Log
 
 Django + Docker を使った開発環境です。
 
