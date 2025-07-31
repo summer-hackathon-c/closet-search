@@ -2,6 +2,12 @@ FROM python:3.9.11
 
 ENV PYTHONUNBUFFERED 1
 
+# 必要なビルドツールと MySQL 開発用パッケージを追加
+RUN apt-get update && apt-get install -y \
+    default-libmysqlclient-dev \
+    build-essential \
+    && apt-get clean
+
 RUN mkdir -p /root/workspace
 COPY requirements.txt /root/workspace/
 WORKDIR /root/workspace
