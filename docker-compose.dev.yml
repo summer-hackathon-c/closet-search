@@ -13,7 +13,8 @@ services:
     volumes:
       - ${SRC_PATH}:/root/workspace
 
-    #初回のみ(＋今後マイグレーションでエラーが起きたら、こちらで切り替えてみる。)
+    #初回のみ
+    #(但し今後マイグレーションでエラーが起きたら、2回目以降の部分をコメントアウトアウトしてこちらに切り替えて対応してください。)
     command: sh -c "sleep 10 && python manage.py runserver 0.0.0.0:8000"
 
     #2回目以降は以下のようにしてOK
