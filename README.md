@@ -45,6 +45,13 @@ docker compose -f docker-compose.dev.yml up --build -d
 docker compose -f docker-compose.prod.yml up --build -d
 ```
 
+### 3.1 初回だけマイグレーション（DBテーブル作成）
+```bash
+docker compose -f docker-compose.dev.yml exec django python manage.py migrate
+```
+(実行後、docker-compose.dev.ymlの16〜20行目確認)
+
+
 ### 4.ブラウザで動作確認
 以下の URL にアクセスします：
 
@@ -64,7 +71,12 @@ docker compose -f docker-compose.dev.yml down
 docker compose -f docker-compose.prod.yml down
 ```
 
-### 5.Ruffコマンド
+### 6.コンテナ内から MySQL にログイン
+```bash
+docker compose -f docker-compose.dev.yml exec db mysql -uapp_user -papp_pass app_db
+```
+
+### 7.Ruffコマンド
 
 Lint(コードチェック& 自動修正)
 
@@ -82,4 +94,17 @@ Format（コード整形）
 
 ```bash
 make format
+```
+
+### 8.ログ確認コマンド（エラーが出た時に試してください。）
+
+Django アプリのログを確認
+
+```bash
+docker compose -f docker-compose.dev.yml logs -f django
+```
+
+MySQL コンテナのログを確認
+```bash
+docker compose -f docker-compose.dev.yml logs -f db
 ```
