@@ -93,7 +93,7 @@ class tags(models.Model):
 
 # item_tagsテーブル(中間テーブル)
 class item_tags(models.Model):
-    item_id = models.ForeignKey(items)
+    item_id = models.ForeignKey(items, on_delete=models.PROTECT)
     tag_id = models.ForeignKey(tags, on_delete=models.CASCADE)
 
 
@@ -129,4 +129,4 @@ class item_photos(models.Model):
 # #wearing_itemsテーブル（中間テーブル）
 # class wearing_items(models.Model):
 #     wearing_history_id = models.ForeignKey(wearing_histories, on_delete=models.CASCADE)
-#     item_id = models.ForeignKey(items)
+#     item_id = models.ForeignKey(items, on_delete=models.PROTECT)
