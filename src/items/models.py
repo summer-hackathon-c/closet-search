@@ -58,7 +58,7 @@ class items(models.Model):
     purchase_date = models.DateField()
     price = models.IntegerField()
     season = models.PositiveBigIntegerField()
-    description = models.CharField(max_length=50)
+    description = models.CharField(max_length=50, null=True, blank=True)
     delete_flag = models.BooleanField(default=False) #default:削除されていない
     user_id = models.ForeignKey(users, on_delete=models.CASCADE)
 
@@ -90,7 +90,7 @@ class tags(models.Model):
 
 #item_tagsテーブル(中間テーブル)
 class item_tags(models.Model):
-    item_id = models.ForeignKey(items, on_delete=models.CASCADE)
+    item_id = models.ForeignKey(items)
     tag_id = models.ForeignKey(tags, on_delete=models.CASCADE)
 
 
@@ -113,7 +113,7 @@ class item_photos(models.Model):
 # class wearing_histories(models.Model):
 #     wearing_history_id = models.BigAutoField(primary_key=True)
 #     wearing_date = models.DateField()
-#     description = models.CharField(max_length=100)
+#     description = models.CharField(max_length=100, null=True, blank=True)
 
 #     #データベースを管理する画面で、上記名前を表示させるように設定
 #     def __str__(self):
@@ -128,7 +128,7 @@ class item_photos(models.Model):
 # #wearing_itemsテーブル（中間テーブル）
 # class wearing_items(models.Model):
 #     wearing_history_id = models.ForeignKey(wearing_histories, on_delete=models.CASCADE)
-#     item_id = models.ForeignKey(items, on_delete=models.CASCADE)
+#     item_id = models.ForeignKey(items)
     
 
 
