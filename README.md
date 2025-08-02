@@ -1,8 +1,9 @@
 # Style Log
 
-Django + Docker を使った開発環境です。
+https://style-log.com/
 
 ## 📦 必要要件
+Django + Docker を使った開発環境です。
 
 - Docker
 - Docker Compose
