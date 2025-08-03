@@ -54,11 +54,10 @@ class Users(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.user_name
-    
-    class Meta:
-        ordering = ["id"] #左記を基準にしてデータを並び替える
-        db_table = "users" #MySQLのテーブル名の指定
 
+    class Meta:
+        ordering = ["id"]  # 左記を基準にしてデータを並び替える
+        db_table = "users"  # MySQLのテーブル名の指定
 
 
 # itemsテーブル
@@ -77,8 +76,8 @@ class Items(models.Model):
         return self.item_id
 
     class Meta:
-        ordering = ["purchase_date"] #左記を基準にしてデータを並び替える
-        db_table = "items" #MySQLのテーブル名の指定
+        ordering = ["purchase_date"]  # 左記を基準にしてデータを並び替える
+        db_table = "items"  # MySQLのテーブル名の指定
 
 
 # tagsテーブル
@@ -93,8 +92,8 @@ class Tags(models.Model):
 
     # 以下の名前を基準として並び替を行う
     class Meta:
-        ordering = ["tag_id"] #左記を基準にしてデータを並び替える
-        db_table = "tags" #MySQLのテーブル名の指定
+        ordering = ["tag_id"]  # 左記を基準にしてデータを並び替える
+        db_table = "tags"  # MySQLのテーブル名の指定
 
 
 # item_tagsテーブル(中間テーブル)
@@ -121,23 +120,23 @@ class ItemPhotos(models.Model):
         db_table = "item_photos"
 
 
-#wearing_historiesテーブル
-class WearingHistories(models.Model):
-    wearing_history_id = models.BigAutoField(primary_key=True)
-    wearing_date = models.DateField()
-    description = models.CharField(max_length=100, null=True, blank=True)
+# # wearing_historiesテーブル
+# class WearingHistories(models.Model):
+#     wearing_history_id = models.BigAutoField(primary_key=True)
+#     wearing_date = models.DateField()
+#     description = models.CharField(max_length=100, null=True, blank=True)
 
-    #データベースを管理する画面で、上記名前を表示させるように設定
-    def __str__(self):
-        return self.wearing_history_id
+#     # データベースを管理する画面で、上記名前を表示させるように設定
+#     def __str__(self):
+#         return self.wearing_history_id
 
-    #以下の名前を基準として並び替を行う
-    class Meta:
-        ordering = ["wearing_history_id"]
-        db_table = "wearing_histories"
+#     # 以下の名前を基準として並び替を行う
+#     class Meta:
+#         ordering = ["wearing_history_id"]
+#         db_table = "wearing_histories"
 
 
-#wearing_itemsテーブル（中間テーブル）
-class WearingItems(models.Model):
-    wearing_history_id = models.ForeignKey(WearingHistories, on_delete=models.CASCADE)
-    item_id = models.ForeignKey(Items, on_delete=models.PROTECT)
+# # wearing_itemsテーブル（中間テーブル）
+# class WearingItems(models.Model):
+#     wearing_history_id = models.ForeignKey(WearingHistories, on_delete=models.CASCADE)
+#     item_id = models.ForeignKey(Items, on_delete=models.PROTECT)
