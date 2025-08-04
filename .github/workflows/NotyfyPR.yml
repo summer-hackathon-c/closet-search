@@ -1,5 +1,5 @@
 # プルリクエストが作成されたときに Mattermost に通知を送る GitHub Actions ワークフロー
-name: Notify Mattermost on PR to develop # ファイルの目的がわかるように記載
+name: Notify Mattermost on PR to develop
 
 on: # ワークフローの実行条件を定義
   pull_request:
@@ -13,12 +13,14 @@ jobs: # 実行する処理のまとまり（ジョブ）を定義
 
     steps: # ジョブ内で実行するステップ（処理）を定義
       - name: Send message to Mattermost # ステップ名（わかりやすい名前を付ける）
-        run: |
-          # Mattermost の Incoming Webhook に POST リクエストを送る
+        run: | # 複数行のシェルスクリプトを記述する
+          # ✅ JSON 形式で Mattermost に通知を送信する
+          # ✅ 各種 GitHub コンテキストをメッセージに埋め込む
           curl -X POST -H "Content-Type: application/json" \
-          -d "{\"text\": \"プルリクエストが作成されたのでご確認ください！\\n\
-●リポジトリ: ${{ github.repository }}\\n\
-●PRタイトル: ${{ github.event.pull_request.title }}\\n\
-●作成者: ${{ github.event.pull_request.user.login }}\\n\
-●URL: ${{ github.event.pull_request.html_url }}\"}" \
-          ${{ secrets.MATTERMOST_WEBHOOK }} # Webhook URL は GitHub Secrets に登録
+          -d '{
+            "text": "✅ プルリクエストが作成されました。\n
+リポジトリ: ${{ github.repository }}\n
+PRタイトル: ${{ github.event.pull_request.title }}\n
+作成者: ${{ github.event.pull_request.user.login }}\n
+URL: ${{ github.event.pull_request.html_url }}"
+          }' ${{ secrets.MATTERMOST_WEBHOOK }} # 🔒 Webhook URL は GitHub Secrets に登録済み
