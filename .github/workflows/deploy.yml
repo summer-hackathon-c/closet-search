@@ -20,7 +20,7 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.DEPLOY_KEY }}
 
-      # 3. SSH Configを作成
+      # 3. SSH Configを作成(private EC2への接続設定)
       - name: Setup SSH Config
         run: |
           mkdir -p ~/.ssh
@@ -29,6 +29,10 @@ jobs:
           echo "  User ${{ secrets.DEPLOY_USER }}" >> ~/.ssh/config
           echo "Host private1" >> ~/.ssh/config
           echo "  HostName ${{ secrets.PRIVATE_HOST }}" >> ~/.ssh/config
+          echo "  User ${{ secrets.DEPLOY_USER }}" >> ~/.ssh/config
+          echo "  ProxyJump bastion" >> ~/.ssh/config
+          echo "Host private2" >> ~/.ssh/config
+          echo "  HostName ${{ secrets.PRIVATE2_HOST }}" >> ~/.ssh/config
           echo "  User ${{ secrets.DEPLOY_USER }}" >> ~/.ssh/config
           echo "  ProxyJump bastion" >> ~/.ssh/config
           chmod 600 ~/.ssh/config
@@ -42,24 +46,32 @@ jobs:
       - name: Test SSH Connection to Private EC2
         run: ssh -o StrictHostKeyChecking=no private1 "echo 'Private1 OK'"
 
+      - name: Test SSH Connection to Private2
+        run: ssh -o StrictHostKeyChecking=no private2 "echo 'Private2 OK'"
+
       # 6. デプロイ処理
-      - name: Deploy via Bastion
+      #Private1
+      - name: Deploy to Private1
         run: |
           ssh -o StrictHostKeyChecking=no private1 << 'EOF'
             set -e
-            echo ">>> Move to project directory"
             cd /home/ec2-user/closet-search
-
-            echo ">>> Ensure remote URL is HTTPS"
             git remote set-url origin https://github.com/summer-hackathon-c/closet-search.git
-
-            echo ">>> Fetching latest code from main branch"
             git fetch --all
             git reset --hard origin/main
-
-            echo ">>> Building and restarting Docker containers"
             docker compose -f docker-compose.prod.yml down
             docker compose -f docker-compose.prod.yml up --build -d
-
-            echo ">>> Deployment completed!"
+            echo ">>> Deployment to private1 completed!"
           EOF
+          
+      #Private2
+      - name: Deploy to Private2
+        run: |
+          ssh -o StrictHostKeyChecking=no private2 << 'EOF'
+            set -e
+            cd /home/ec2-user/closet-search
+            git remote set-url origin https://github.com/summer-hackathon-c/closet-search.git
+            git fetch --all
+            git reset --hard origin/main
+            docker compose -f docker-compose.prod.yml down
+            docker compose
