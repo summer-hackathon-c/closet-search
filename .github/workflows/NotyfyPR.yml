@@ -26,3 +26,4 @@ PRタイトル: ${{ github.event.pull_request.title }}\n
 URL: ${{ github.event.pull_request.html_url }}"
           }' \
           ${{ secrets.MATTERMOST_WEBHOOK }} # ✅ Webhook URL は GitHub Secrets に登録
+#テスト
