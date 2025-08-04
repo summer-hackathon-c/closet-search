@@ -38,7 +38,7 @@ class UserManager(BaseUserManager):
 
 
 # usersテーブル（カスタムユーザーモデルを使用）
-class Users(AbstractBaseUser, PermissionsMixin):
+class User(AbstractBaseUser, PermissionsMixin):
     id = models.AutoField(primary_key=True)
     user_name = models.CharField(max_length=50)
     email = models.EmailField(max_length=255, unique=True)
@@ -61,15 +61,15 @@ class Users(AbstractBaseUser, PermissionsMixin):
 
 
 # itemsテーブル
-class Items(models.Model):
+class Item(models.Model):
     item_id = models.BigAutoField(primary_key=True)
-    create_date = models.DateField(auto_now_add=True)  # 編集したら変更となる気がする
+    create_date = models.DateField(auto_now_add=True)
     purchase_date = models.DateField()
     price = models.IntegerField()
-    season = models.PositiveBigIntegerField()
+    season = models.PositiveSmallIntegerField()
     description = models.CharField(max_length=50, null=True, blank=True)
     delete_flag = models.BooleanField(default=False)  # default:削除されていない
-    user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
 
     # データベースを管理する画面で、上記名前を表示させるように設定
     def __str__(self):
@@ -81,10 +81,10 @@ class Items(models.Model):
 
 
 # tagsテーブル
-class Tags(models.Model):
+class Tag(models.Model):
     tag_id = models.BigAutoField(primary_key=True)
     tag_name = models.CharField(max_length=50)
-    user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
 
     # データベースを管理する画面で、上記名前を表示させるように設定
     def __str__(self):
@@ -97,16 +97,16 @@ class Tags(models.Model):
 
 
 # item_tagsテーブル(中間テーブル)
-class ItemTags(models.Model):
-    item_id = models.ForeignKey(Items, on_delete=models.PROTECT)
-    tag_id = models.ForeignKey(Tags, on_delete=models.CASCADE)
+class ItemTag(models.Model):
+    item_id = models.ForeignKey(Item, on_delete=models.PROTECT)
+    tag_id = models.ForeignKey(Tag, on_delete=models.CASCADE)
 
     class Meta:
         db_table = "item_tags"
 
 
 # item_photosテーブル
-class ItemPhotos(models.Model):
+class ItemPhoto(models.Model):
     photo_id = models.BigAutoField(primary_key=True)
     url = models.CharField(max_length=255)
 
@@ -120,23 +120,23 @@ class ItemPhotos(models.Model):
         db_table = "item_photos"
 
 
-# # wearing_historiesテーブル
-# class WearingHistories(models.Model):
-#     wearing_history_id = models.BigAutoField(primary_key=True)
-#     wearing_date = models.DateField()
-#     description = models.CharField(max_length=100, null=True, blank=True)
+# wearing_historiesテーブル
+class WearingHistory(models.Model):
+    wearing_history_id = models.BigAutoField(primary_key=True)
+    wearing_date = models.DateField()
+    description = models.CharField(max_length=100, null=True, blank=True)
 
-#     # データベースを管理する画面で、上記名前を表示させるように設定
-#     def __str__(self):
-#         return self.wearing_history_id
+    # データベースを管理する画面で、上記名前を表示させるように設定
+    def __str__(self):
+        return self.wearing_history_id
 
-#     # 以下の名前を基準として並び替を行う
-#     class Meta:
-#         ordering = ["wearing_history_id"]
-#         db_table = "wearing_histories"
+    # 以下の名前を基準として並び替を行う
+    class Meta:
+        ordering = ["wearing_history_id"]
+        db_table = "wearing_histories"
 
 
-# # wearing_itemsテーブル（中間テーブル）
-# class WearingItems(models.Model):
-#     wearing_history_id = models.ForeignKey(WearingHistories, on_delete=models.CASCADE)
-#     item_id = models.ForeignKey(Items, on_delete=models.PROTECT)
+# wearing_itemsテーブル（中間テーブル）
+class WearingItem(models.Model):
+    wearing_history_id = models.ForeignKey(WearingHistory, on_delete=models.CASCADE)
+    item_id = models.ForeignKey(Item, on_delete=models.PROTECT)
