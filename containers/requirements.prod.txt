@@ -1,2 +1,3 @@
 django == 4.1
 gunicorn
+mysqlclient>=2.1
