@@ -20,13 +20,7 @@ services:
     volumes:
       # ローカルの作業ディレクトリと仮想環境の作業ディレクトリの対応づけ
       - ${SRC_PATH}:/root/workspace
-    # 環境変数ファイルの指定
-    env_file:
-      - .env
 
-    # 初回のみ
-    # （但し今後マイグレーションでエラーが起きたら、2回目以降の部分をコメントアウトしてこちらに切り替えて対応してください。）
-    command: sh -c "sleep 10 && gunicorn closet_search.wsgi:application --bind 0.0.0.0:8000"
-
-    # 2回目以降は以下のようにしてOK（migrateしてから起動）
-    # command: sh -c "python manage.py migrate && gunicorn closet_search.wsgi:application --bind 0.0.0.0:8000"
+    # コンテナ起動時に実行されるコマンド
+    # gunicorn を起動する前に migrate を自動実行
+    command: sh -c "python manage.py migrate && gunicorn closet_search.wsgi:application --bind 0.0.0.0:8000"
