@@ -72,12 +72,24 @@ docker compose -f docker-compose.dev.yml down
 docker compose -f docker-compose.prod.yml down
 ```
 
-### 6.コンテナ内から MySQL にログイン
+### 6.コンテナ内部に入るコマンド
+
+Django コンテナ
+```bash
+docker compose -f docker-compose.dev.yml exec django /bin/bash
+```
+
+MySQL コンテナ
+```bash
+docker compose -f docker-compose.dev.yml exec db /bin/bash
+```
+
+### 7.コンテナ内から MySQL にログイン
 ```bash
 docker compose -f docker-compose.dev.yml exec db mysql -uapp_user -papp_pass app_db
 ```
 
-### 7.Ruffコマンド
+### 8.Ruffコマンド
 
 Lint(コードチェック& 自動修正)
 
@@ -97,7 +109,13 @@ Format（コード整形）
 make format
 ```
 
-### 8.ログ確認コマンド（エラーが出た時に試してください。）
+### 9.コンテナの状態を確認コマンド
+
+```bash
+docker compose -f docker-compose.dev.yml ps
+```
+
+### 10.ログ確認コマンド（エラーが出た時に試してください。）
 
 Django アプリのログを確認
 
