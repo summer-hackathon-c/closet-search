@@ -17,6 +17,11 @@ services:
     # 対話的なセッションやコマンドラインの操作を許可する
     tty: true
 
+    volumes:
+      # ホストの Django プロジェクト（${SRC_PATH}）をコンテナ内の /root/workspace にマウント
+      # manage.py やアプリケーションコードにアクセスできるようにするために必須
+      - ${SRC_PATH}:/root/workspace
+
     # 環境変数ファイルの指定
     env_file:
       - .env
