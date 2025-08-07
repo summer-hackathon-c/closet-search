@@ -17,7 +17,14 @@ RUN pip install --upgrade pip \
     && pip install --upgrade setuptools \
     && pip install -r requirements.prod.txt
 
-COPY . .
+# wait-for-it.sh をコンテナにコピー
+COPY wait-for-it.sh /wait-for-it.sh
+RUN chmod +x /wait-for-it.sh
 
-# gunicorn で起動（requirements.prod.txt に gunicorn が含まれている前提）
-CMD ["gunicorn", "closet_search.wsgi:application", "--bind", "0.0.0.0:8000"]
+# スクリプトをコピー
+COPY entrypoint.prod.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+# CMD を entrypoint に設定（Gunicornはスクリプト内で起動）
+CMD ["bash", "/entrypoint.sh"]
+
