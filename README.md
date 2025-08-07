@@ -46,11 +46,11 @@ docker compose -f docker-compose.dev.yml up --build -d
 docker compose -f docker-compose.prod.yml up --build -d
 ```
 
-### 3.1 初回：マイグレーション（DBテーブル作成）
+### 3.1 マイグレーション（DBテーブル作成）
+マイグレーションでエラーが起きたら、単独で以下のマーグレーションコマンド試しても良いかもしれません。
 ```bash
 docker compose -f docker-compose.dev.yml exec django python manage.py migrate
 ```
-(実行後、docker-compose.dev.ymlの「#初回のみ〜」と記載されたコメントアウトの部分参照)
 
 
 ### 4.ブラウザで動作確認
