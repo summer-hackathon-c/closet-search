@@ -20,6 +20,3 @@ services:
     # 環境変数ファイルの指定
     env_file:
       - .env
-    
-    depends_on:
-      - db 
