@@ -76,3 +76,4 @@ jobs:
             docker compose -f docker-compose.prod.yml down
             docker compose -f docker-compose.prod.yml up --build -d
             echo ">>> Deployment to private2 completed!"
+          EOF
