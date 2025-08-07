@@ -74,4 +74,6 @@ jobs:
             git fetch --all
             git reset --hard origin/main
             docker compose -f docker-compose.prod.yml down
-            docker compose
+            docker compose -f docker-compose.prod.yml up --build -d
+            echo ">>> Deployment to private2 completed!"
+          EOF
