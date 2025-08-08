@@ -74,7 +74,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "closet_search.wsgi.application"
 
-AUTH_USER_MODEL = "items.users"
+AUTH_USER_MODEL = "items.User"
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
