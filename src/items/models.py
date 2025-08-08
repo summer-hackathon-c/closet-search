@@ -47,7 +47,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     objects = UserManager()
 
-    # 一意の識別子として使用される(ログイン時)
+    # ログイン時一意の識別子として使用される
     USERNAME_FIELD = "email"
     # superuser作成時追加で求められるフィールド
     REQUIRED_FIELDS = ["user_name"]
@@ -71,7 +71,7 @@ class Item(models.Model):
     delete_flag = models.BooleanField(default=False)  # default:削除されていない
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
 
-    # データベースを管理する画面で、上記名前を表示させるように設定
+    # データベースを管理する画面で、表示させる基準となるもの
     def __str__(self):
         return self.item_id
 
@@ -86,7 +86,7 @@ class Tag(models.Model):
     tag_name = models.CharField(max_length=50)
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
 
-    # データベースを管理する画面で、上記名前を表示させるように設定
+    # データベースを管理する画面で、以下を基準にして表示させる
     def __str__(self):
         return self.tag_name
 
@@ -110,14 +110,13 @@ class ItemPhoto(models.Model):
     photo_id = models.BigAutoField(primary_key=True)
     url = models.CharField(max_length=255)
 
-    # データベースを管理する画面で、上記名前を表示させるように設定
+    # データベースを管理する画面で、以下を基準にして表示させる
     def __str__(self):
         return self.photo_id
 
-    # 以下の名前を基準として並び替を行う
     class Meta:
-        ordering = ["photo_id"]
-        db_table = "item_photos"
+        ordering = ["photo_id"]  # 左記を基準にしてデータを並び替える
+        db_table = "item_photos"  # MySQLのテーブル名の指定
 
 
 # wearing_historiesテーブル
@@ -126,17 +125,19 @@ class WearingHistory(models.Model):
     wearing_date = models.DateField()
     description = models.CharField(max_length=100, null=True, blank=True)
 
-    # データベースを管理する画面で、上記名前を表示させるように設定
+    # データベースを管理する画面で、以下を基準にして表示させる
     def __str__(self):
         return self.wearing_history_id
 
-    # 以下の名前を基準として並び替を行う
     class Meta:
-        ordering = ["wearing_history_id"]
-        db_table = "wearing_histories"
+        ordering = ["wearing_history_id"]  # 左記を基準にしてデータを並び替える
+        db_table = "wearing_histories"  # MySQLのテーブル名の指定
 
 
 # wearing_itemsテーブル（中間テーブル）
 class WearingItem(models.Model):
     wearing_history_id = models.ForeignKey(WearingHistory, on_delete=models.CASCADE)
     item_id = models.ForeignKey(Item, on_delete=models.PROTECT)
+
+    class Meta:
+        db_table = "wearing_items"  # MySQLのテーブル名の指定
