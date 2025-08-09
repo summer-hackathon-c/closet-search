@@ -50,3 +50,5 @@ class CustomUserCreationForm(forms.ModelForm):
         if User.objects.filter(email=email).exists(): 
             raise forms.ValidationError("このメールアドレスは既に登録されています。")
         return email
+    
+    
