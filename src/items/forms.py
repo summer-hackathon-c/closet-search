@@ -2,7 +2,7 @@ from django import forms
 from .models import User
 
 
-# 新規登録
+# ユーザー新規登録
 class CustomUserCreationForm(forms.ModelForm):
     # 入力フィールドへ入力したパスワードは非表示で表示
     password1 = forms.CharField(

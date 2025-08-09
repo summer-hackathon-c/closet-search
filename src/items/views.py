@@ -8,7 +8,7 @@ from .forms import CustomUserCreationForm
 # Create your views here.
 
 
-# 新規登録
+# ユーザー新規登録
 class SignUpView(CreateView):
     form_class = CustomUserCreationForm
     template_name = "registration/signup.html"
