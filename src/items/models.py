@@ -42,8 +42,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     user_name = models.CharField(max_length=50)
     email = models.EmailField(max_length=255, unique=True)
     admin_flag = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True) #自動セット、以降変更なし
-    updated_at = models.DateTimeField(auto_now=True) #現在時刻にて自動更新される
+    created_at = models.DateTimeField(auto_now_add=True)  # 自動セット、以降変更なし
+    updated_at = models.DateTimeField(auto_now=True)  # 現在時刻にて自動更新される
     # passwordは記載不要。AbstractBaseUserに含まれているため
 
     objects = UserManager()
@@ -69,7 +69,7 @@ class Item(models.Model):
     description = models.CharField(max_length=50, null=True, blank=True)
     delete_flag = models.BooleanField(default=False)  # default:削除されていない
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True) 
+    created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     # データベースを管理する画面で、表示させる基準となるもの
