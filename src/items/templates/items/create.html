@@ -5,6 +5,11 @@
 {% block content %}
     <h2>アイテム新規登録</h2>
     {% comment %}
-        一旦このテンプレートを使って確認してください。
+        一旦フォームの表示を追加します。
     {% endcomment %}
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">登録する</button>
+    </form>
 {% endblock %}

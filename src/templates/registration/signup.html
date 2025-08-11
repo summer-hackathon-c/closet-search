@@ -11,10 +11,16 @@
     </header>
 
     <main>
-        <h2>ユーザー登録</h2>
+        <h2>Style-Log</h2>
+        <h3>ユーザー登録してください</h3>
         {% comment %}
-            一旦このテンプレートを使って確認してください。
+            一旦フォームの表示を追加します。
         {% endcomment %}
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">新規登録</button>
+        </form>
     </main>
 
     <footer>
