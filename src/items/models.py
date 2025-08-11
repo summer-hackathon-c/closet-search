@@ -104,8 +104,9 @@ class ItemTag(models.Model):
     tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
 
     class Meta:
-        ordering = ["item_id"] # 左記を基準にしてデータを並び替える
+        ordering = ["item_id"]  # 左記を基準にしてデータを並び替える
         db_table = "item_tags"  # MySQLのテーブル名の指定
+
 
 # item_photosテーブル
 class ItemPhoto(models.Model):
@@ -146,4 +147,4 @@ class WearingItem(models.Model):
 
     class Meta:
         ordering = ["wearing_history_id"]  # 左記を基準にしてデータを並び替える
-        db_table = "wearing_items"  # MySQLのテーブル名の指定 
+        db_table = "wearing_items"  # MySQLのテーブル名の指定
