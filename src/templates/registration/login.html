@@ -11,10 +11,19 @@
     </header>
 
     <main>
-        <h2>ログイン</h2>
+        <h2>Style-Log</h2>
+        <h3>アイテムを記録しよう</h3>
         {% comment %}
-            一旦このテンプレートを使って確認してください。
+            一旦フォームの表示を追加します。
         {% endcomment %}
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">ログイン</button>
+        </form>
+        <p>
+            アカウントをお持ちでない方は、<a href="{% url 'signup' %}">新規登録</a>へ
+        </p>
     </main>
 
     <footer>
