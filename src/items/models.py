@@ -110,6 +110,7 @@ class ItemTag(models.Model):
 # item_photosテーブル
 class ItemPhoto(models.Model):
     url = models.CharField(max_length=255)
+    item = models.ForeignKey(Item, on_delete=models.PROTECT)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
