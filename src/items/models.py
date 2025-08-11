@@ -74,7 +74,7 @@ class Item(models.Model):
 
     # データベースを管理する画面で、表示させる基準となるもの
     def __str__(self):
-        return self.item_id
+        return self.id
 
     class Meta:
         ordering = ["purchase_date"]  # 左記を基準にしてデータを並び替える
@@ -104,8 +104,8 @@ class ItemTag(models.Model):
     tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
 
     class Meta:
-        db_table = "item_tags"
-
+        ordering = ["item_id"] # 左記を基準にしてデータを並び替える
+        db_table = "item_tags"  # MySQLのテーブル名の指定
 
 # item_photosテーブル
 class ItemPhoto(models.Model):
@@ -116,7 +116,7 @@ class ItemPhoto(models.Model):
 
     # データベースを管理する画面で、以下を基準にして表示させる
     def __str__(self):
-        return self.photo_id
+        return self.id
 
     class Meta:
         ordering = ["id"]  # 左記を基準にしてデータを並び替える
@@ -132,7 +132,7 @@ class WearingHistory(models.Model):
 
     # データベースを管理する画面で、以下を基準にして表示させる
     def __str__(self):
-        return self.wearing_history_id
+        return self.id
 
     class Meta:
         ordering = ["id"]  # 左記を基準にしてデータを並び替える
@@ -145,4 +145,5 @@ class WearingItem(models.Model):
     item = models.ForeignKey(Item, on_delete=models.PROTECT)
 
     class Meta:
-        db_table = "wearing_items"  # MySQLのテーブル名の指定
+        ordering = ["wearing_history_id"]  # 左記を基準にしてデータを並び替える
+        db_table = "wearing_items"  # MySQLのテーブル名の指定 
