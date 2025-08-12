@@ -1,33 +1,29 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ログイン</title>
-</head>
-<body>
-    <header>
-        <h1>ログイン</h1>
-    </header>
+{% extends "base_auth.html" %}
+{% load static %}
+{% load django_bootstrap5 %}
 
-    <main>
-        <h2>Style-Log</h2>
-        <h3>アイテムを記録しよう</h3>
-        {% comment %}
-            一旦フォームの表示を追加します。
-        {% endcomment %}
-        <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit">ログイン</button>
-        </form>
-        <p>
-            アカウントをお持ちでない方は、<a href="{% url 'signup' %}">新規登録</a>へ
-        </p>
-    </main>
+{% block title %}ログイン{% endblock %}
 
-    <footer>
-        <p>&copy; 2025 Summer C team</p>
-    </footer>
-</body>
-</html>
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/login.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="">
+    <h2 class="catch-copy">アイテムを記録しよう</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        {% comment %} {{ form.as_p }} {% endcomment %}
+        {% bootstrap_form form %}
+
+        <div class="container mt-5">
+            <button type="submit" class="btn btn-primary my-btn">ログイン</button>
+        </div>   
+    </form>
+
+    <p class="to-login">
+        アカウントをお持ちでない方は、<a href="{% url 'signup' %}">新規登録</a>へ
+    </p>
+</div>
+{% endblock %}
