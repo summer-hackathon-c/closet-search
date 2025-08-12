@@ -57,6 +57,11 @@ class ItemForm(forms.ModelForm):
     class Meta:
         model = Item
         fields = ["purchase_date", "price", "description"]
+        labels = {
+            "purchase_date": "購入日",
+            "price": "価格",
+            "description": "説明",
+        }
 
 
 # 画像アップロード
