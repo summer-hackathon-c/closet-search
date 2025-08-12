@@ -51,11 +51,13 @@ class CustomUserCreationForm(forms.ModelForm):
             raise forms.ValidationError("このメールアドレスは既に登録されています。")
         return email
 
+
 # アイテム新規登録
 class ItemForm(forms.ModelForm):
     class Meta:
         model = Item
         fields = ["purchase_date", "price", "description"]
+
 
 # 画像アップロード
 class PhotoUploadForm(forms.Form):
@@ -63,7 +65,7 @@ class PhotoUploadForm(forms.Form):
     images = forms.FileField(
         label="画像ファイル（複数可）",
         widget=forms.ClearableFileInput(
-            attrs={"multiple": True, "accept": "image/*", "id": "images-input"}  
+            attrs={"multiple": True, "accept": "image/*", "id": "images-input"}
         ),
         required=False,
     )
