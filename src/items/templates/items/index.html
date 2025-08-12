@@ -5,6 +5,20 @@
 {% block content %}
     <h2>登録アイテム一覧</h2>
     {% comment %}
-        一旦このテンプレートを使って確認してください。
+        一旦アイテムの表示を追加します。
     {% endcomment %}
+    {% if items %}
+        {% for item in items %}
+            <li>{{ item.purchase_date}}</li>
+            <li>{{ item.price}}</li>
+            <li>
+                {# photos は View 側 の設定による #}
+                {% if item.photos %}
+                    <img src="{{ item.photos.0.image.url }}" alt="写真" class="item-photo">
+                {% endif %}
+            </li>
+        {% endfor %}
+    {% else %}
+        <p>アイテムが登録されていません</p>
+    {% endif %}
 {% endblock %}
