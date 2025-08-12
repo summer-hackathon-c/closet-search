@@ -39,10 +39,11 @@ class UserManager(BaseUserManager):
 
 # usersテーブル（カスタムユーザーモデルを使用）
 class User(AbstractBaseUser, PermissionsMixin):
-    id = models.AutoField(primary_key=True)
     user_name = models.CharField(max_length=50)
     email = models.EmailField(max_length=255, unique=True)
     admin_flag = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)  # 自動セット、以降変更なし
+    updated_at = models.DateTimeField(auto_now=True)  # 現在時刻にて自動更新される
     # passwordは記載不要。AbstractBaseUserに含まれているため
 
     objects = UserManager()
@@ -62,18 +63,18 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 # itemsテーブル
 class Item(models.Model):
-    item_id = models.BigAutoField(primary_key=True)
-    create_date = models.DateField(auto_now_add=True)
     purchase_date = models.DateField()
     price = models.IntegerField()
     season = models.PositiveSmallIntegerField()
     description = models.CharField(max_length=50, null=True, blank=True)
     delete_flag = models.BooleanField(default=False)  # default:削除されていない
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     # データベースを管理する画面で、表示させる基準となるもの
     def __str__(self):
-        return self.item_id
+        return self.id
 
     class Meta:
         ordering = ["purchase_date"]  # 左記を基準にしてデータを並び替える
@@ -82,9 +83,10 @@ class Item(models.Model):
 
 # tagsテーブル
 class Tag(models.Model):
-    tag_id = models.BigAutoField(primary_key=True)
     tag_name = models.CharField(max_length=50)
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     # データベースを管理する画面で、以下を基準にして表示させる
     def __str__(self):
@@ -92,52 +94,57 @@ class Tag(models.Model):
 
     # 以下の名前を基準として並び替を行う
     class Meta:
-        ordering = ["tag_id"]  # 左記を基準にしてデータを並び替える
+        ordering = ["id"]  # 左記を基準にしてデータを並び替える
         db_table = "tags"  # MySQLのテーブル名の指定
 
 
 # item_tagsテーブル(中間テーブル)
 class ItemTag(models.Model):
-    item_id = models.ForeignKey(Item, on_delete=models.PROTECT)
-    tag_id = models.ForeignKey(Tag, on_delete=models.CASCADE)
+    item = models.ForeignKey(Item, on_delete=models.PROTECT)
+    tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
 
     class Meta:
-        db_table = "item_tags"
+        ordering = ["item_id"]  # 左記を基準にしてデータを並び替える
+        db_table = "item_tags"  # MySQLのテーブル名の指定
 
 
 # item_photosテーブル
 class ItemPhoto(models.Model):
-    photo_id = models.BigAutoField(primary_key=True)
     url = models.CharField(max_length=255)
+    item = models.ForeignKey(Item, on_delete=models.PROTECT)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     # データベースを管理する画面で、以下を基準にして表示させる
     def __str__(self):
-        return self.photo_id
+        return self.id
 
     class Meta:
-        ordering = ["photo_id"]  # 左記を基準にしてデータを並び替える
+        ordering = ["id"]  # 左記を基準にしてデータを並び替える
         db_table = "item_photos"  # MySQLのテーブル名の指定
 
 
 # wearing_historiesテーブル
 class WearingHistory(models.Model):
-    wearing_history_id = models.BigAutoField(primary_key=True)
     wearing_date = models.DateField()
     description = models.CharField(max_length=100, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     # データベースを管理する画面で、以下を基準にして表示させる
     def __str__(self):
-        return self.wearing_history_id
+        return self.id
 
     class Meta:
-        ordering = ["wearing_history_id"]  # 左記を基準にしてデータを並び替える
+        ordering = ["id"]  # 左記を基準にしてデータを並び替える
         db_table = "wearing_histories"  # MySQLのテーブル名の指定
 
 
 # wearing_itemsテーブル（中間テーブル）
 class WearingItem(models.Model):
-    wearing_history_id = models.ForeignKey(WearingHistory, on_delete=models.CASCADE)
-    item_id = models.ForeignKey(Item, on_delete=models.PROTECT)
+    wearing_history = models.ForeignKey(WearingHistory, on_delete=models.CASCADE)
+    item = models.ForeignKey(Item, on_delete=models.PROTECT)
 
     class Meta:
+        ordering = ["wearing_history_id"]  # 左記を基準にしてデータを並び替える
         db_table = "wearing_items"  # MySQLのテーブル名の指定
