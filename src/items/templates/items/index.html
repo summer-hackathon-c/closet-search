@@ -13,9 +13,15 @@
             <li>{{ item.price}}</li>
             <li>
                 {# photos は View 側 の設定による #}
-                {% if item.photos %}
-                    <img src="{{ item.photos.0.image.url }}" alt="写真" class="item-photo">
+                <li>
+            {% with p=item.photos.all.0 %}
+                {% if p %}
+                <img src="{{ p.url }}" alt="写真" class="item-photo" style="height:140px;object-fit:cover;">
+                {% else %}
+                <span>No Image</span>
                 {% endif %}
+            {% endwith %}
+        </li>
             </li>
         {% endfor %}
     {% else %}
