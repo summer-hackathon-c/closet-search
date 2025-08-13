@@ -77,8 +77,8 @@ WSGI_APPLICATION = "closet_search.wsgi.application"
 
 AUTH_USER_MODEL = "items.User"
 
-AUTHENTICATION_BACKENDS =[
-    'items.backends.EmailBackend',
+AUTHENTICATION_BACKENDS = [
+    "items.backends.EmailBackend",
 ]
 
 # Database
