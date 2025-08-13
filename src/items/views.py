@@ -10,6 +10,7 @@ from django.urls import reverse_lazy
 from .forms import CustomUserCreationForm, ItemForm, PhotoUploadForm
 from .models import Item, ItemPhoto
 from django.contrib.auth import get_user_model
+from django.contrib import messages
 
 User = get_user_model()
 
@@ -29,55 +30,64 @@ class SignUpView(CreateView):
 class ItemListView(ListView):
     model = Item
     template_name = "items/index.html"
-    context_object_name = "item"
+    context_object_name = "items"
 
 
 # アイテム新規登録
 class ItemsCreateView(View):
+    # 許可するHTTPメソッドを制限（GETとPOSTのみ）
+    http_method_names = ["get", "post"]
     template_name = "items/create.html"
 
-    def get(self, request):
+    # GETリクエスト（フォーム表示）
+    def get(self, request, *args, **kwargs):
         return render(
             request,
             self.template_name,
             {
-                "form": ItemForm(),
-                "photo_form": PhotoUploadForm(),
+                "form": ItemForm(),  # アイテム登録フォーム
+                "photo_form": PhotoUploadForm(),  # 画像アップロードフォーム
             },
         )
 
-    def post(self, request):
+    # POSTリクエスト（登録処理）
+    def post(self, request, *args, **kwargs):
+        # 送信データをフォームにバインド
         form = ItemForm(request.POST)
         photo_form = PhotoUploadForm(request.POST, request.FILES)
 
-        if form.is_valid() and photo_form.is_valid():
-            # アイテム作成（modelsは user_id というFK名）
-            item = form.save(commit=False)
-            # ★ ログイン機能未完成なので一時的に固定ユーザーを紐づけ
-            # item.user_id = request.user  # ← 本来はこちら
-            item.user_id = User.objects.first()  # 先頭ユーザーを仮で設定
+        # フォームが無効な場合はエラーを表示して再描画
+        if not form.is_valid() or not photo_form.is_valid():
+            messages.error(
+                request, f"ItemForm: {form.errors} / PhotoForm: {photo_form.errors}"
+            )
+            return render(
+                request, self.template_name, {"form": form, "photo_form": photo_form}
+            )
 
-            # ★ 必須カラム season をデフォルトで補完（0 など）
-            item.season = 0
-            item.save()
+        # 仮のユーザーを取得（未実装のログイン機能の代わり）
+        dummy_user = User.objects.first()
+        if dummy_user is None:
+            messages.error(request, "ユーザーが存在しません。先に1件作成してください。")
+            return render(
+                request, self.template_name, {"form": form, "photo_form": photo_form}
+            )
 
-            # 画像を複数保存
-            for img in request.FILES.getlist("images"):
-                ext = os.path.splitext(img.name)[1].lower()
-                filename = f"item_photos/{uuid.uuid4().hex}{ext}"
-                saved_path = default_storage.save(filename, img)
-                file_url = default_storage.url(
-                    saved_path
-                )  # 例: /media/item_photos/xxxx.jpg
-                ItemPhoto.objects.create(item_id=item, url=file_url)
+        # Itemモデルを保存（ユーザーとシーズンを設定）
+        item = form.save(commit=False)
+        item.user = dummy_user
 
-            return redirect("item-list")
+        # seasonは暫定で以下のように設定
+        item.season = 0
+        item.save()
 
-        return render(
-            request,
-            self.template_name,
-            {
-                "form": form,
-                "photo_form": photo_form,
-            },
-        )
+        # アップロードされた複数画像を保存
+        for img in request.FILES.getlist("images"):
+            ext = os.path.splitext(img.name)[1].lower()
+            filename = f"item_photos/{uuid.uuid4().hex}{ext}"
+            saved_path = default_storage.save(filename, img)
+            file_url = default_storage.url(saved_path)
+            ItemPhoto.objects.create(item=item, url=file_url)
+
+        # 一覧ページへリダイレクト
+        return redirect("item-list")
