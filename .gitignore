@@ -2,5 +2,5 @@
 *.log
 *.pyc
 __pycache__/
-db-volum
+db-volumes/
 media/
