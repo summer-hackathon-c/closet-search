@@ -4,13 +4,13 @@
 {% block title %}アイテム新規登録{% endblock %}
 
 {% block content %}
- 
   <h2>アイテム新規登録</h2>
 
-  {% if form.errors %}
-  <ul style="color:red">
-    {% for field, errors in form.errors.items %}
-      <li>{{ field }}: {{ errors|join:", " }}</li>
+  
+{% if messages %}
+  <ul>
+    {% for message in messages %}
+      <li style="color:red">{{ message }}</li>
     {% endfor %}
   </ul>
 {% endif %}
