@@ -4,7 +4,7 @@ from django.contrib.auth import login
 from django.views.generic import CreateView
 from django.urls import reverse_lazy
 from .forms import CustomUserCreationForm, LoginForm
-from django.utils.timezone import now 
+from django.utils.timezone import now
 # from .models import User
 
 # Create your views here.

@@ -3,6 +3,7 @@ from .models import User
 from django.contrib.auth import authenticate
 from django.forms import ValidationError
 
+
 # ユーザー新規登録
 class CustomUserCreationForm(forms.ModelForm):
     # 入力フィールドへ入力したパスワードは非表示で表示
