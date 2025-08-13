@@ -1,61 +1,83 @@
-name: Auto Deploy to style-log.com (Docker Compose)
+name: Auto Deploy to style-log.com (Docker Compose via SSM)
 
 on:
   push:
-    branches:
-      - main  # mainブランチでのみ実行
+    branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
 
     steps:
-      # 1. GitHubのリポジトリをチェックアウト
+      # 0) ソース取得
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      # 2. SSH鍵を設定
-      - name: Setup SSH
-        uses: webfactory/ssh-agent@v0.7.0
+      # 1) AWS 認証（Secrets のキーを使用）
+      - name: Configure AWS credentials (Access Keys)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      # 1.5) 認証の疎通確認
+      - name: Verify AWS identity
+        run: aws sts get-caller-identity
+
+      # 2) Session Manager Plugin をランナーにインストール
+      - name: Install Session Manager Plugin
+        run: |
+          set -e
+          curl -sL "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb" -o /tmp/ssm-plugin.deb
+          sudo dpkg -i /tmp/ssm-plugin.deb
+          session-manager-plugin --version
+
+      # 3) SSH 秘密鍵をAgentへ登録（DEPLOY_KEY）
+      - name: Setup SSH key (ssh-agent)
+        uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.DEPLOY_KEY }}
 
-      # 3. SSH Configを作成(private EC2への接続設定)
-      - name: Setup SSH Config
+      # 4) SSH config（SSM用：ssh-agentの鍵を自動利用）
+      - name: Setup SSH Config for SSM
         run: |
           mkdir -p ~/.ssh
-          echo "Host bastion" >> ~/.ssh/config
-          echo "  HostName ${{ secrets.BASTION_HOST }}" >> ~/.ssh/config
-          echo "  User ${{ secrets.DEPLOY_USER }}" >> ~/.ssh/config
-          echo "Host private1" >> ~/.ssh/config
-          echo "  HostName ${{ secrets.PRIVATE_HOST }}" >> ~/.ssh/config
-          echo "  User ${{ secrets.DEPLOY_USER }}" >> ~/.ssh/config
-          echo "  ProxyJump bastion" >> ~/.ssh/config
-          echo "Host private2" >> ~/.ssh/config
-          echo "  HostName ${{ secrets.PRIVATE2_HOST }}" >> ~/.ssh/config
-          echo "  User ${{ secrets.DEPLOY_USER }}" >> ~/.ssh/config
-          echo "  ProxyJump bastion" >> ~/.ssh/config
+          chmod 700 ~/.ssh
+          cat > ~/.ssh/config << EOF
+          Host private1-ssm
+            HostName i-06038da6332891790
+            User $DEPLOY_USER
+            ProxyCommand /bin/sh -lc 'aws ssm start-session --region $AWS_REGION --target %h --document-name AWS-StartSSHSession --parameters "portNumber=%p"'
+
+          Host private2-ssm
+            HostName i-0442d66d290cc9f1c
+            User $DEPLOY_USER
+            ProxyCommand /bin/sh -lc 'aws ssm start-session --region $AWS_REGION --target %h --document-name AWS-StartSSHSession --parameters "portNumber=%p"'
+          EOF
           chmod 600 ~/.ssh/config
-          cat ~/.ssh/config
+          # known_hosts チェック省略（本番で厳格化するなら管理してください）
+          printf "Host *\n  StrictHostKeyChecking no\n  UserKnownHostsFile /dev/null\n" >> ~/.ssh/config
+          # 解釈確認（デバッグ用）
+          ssh -G private1-ssm | grep -E '^(hostname|proxycommand)' || true
 
-      # 4. Bastionへの接続テスト
-      - name: Test SSH Connection to Bastion
-        run: ssh -o StrictHostKeyChecking=no bastion "echo 'Bastion OK'"
+      # 5) SSM 経由の接続テスト
+      - name: Test SSH via SSM - private1
+        run: ssh -o ConnectTimeout=20 private1-ssm "echo 'Private1 via SSM OK'"
 
-      # 5. Private EC2への接続テスト
-      - name: Test SSH Connection to Private EC2
-        run: ssh -o StrictHostKeyChecking=no private1 "echo 'Private1 OK'"
+      - name: Test SSH via SSM - private2
+        run: ssh -o ConnectTimeout=20 private2-ssm "echo 'Private2 via SSM OK'"
 
-      - name: Test SSH Connection to Private2
-        run: ssh -o StrictHostKeyChecking=no private2 "echo 'Private2 OK'"
-
-      # 6. デプロイ処理
-      #Private1
-      - name: Deploy to Private1
+      # 6) デプロイ（Docker Compose）
+      - name: Deploy to Private1 (via SSM)
         run: |
-          ssh -o StrictHostKeyChecking=no private1 << 'EOF'
+          ssh private1-ssm << EOF
             set -e
-            cd /home/ec2-user/closet-search
+            cd /home/$DEPLOY_USER/closet-search
             git remote set-url origin https://github.com/summer-hackathon-c/closet-search.git
             git fetch --all
             git reset --hard origin/main
@@ -63,13 +85,12 @@ jobs:
             docker compose -f docker-compose.prod.yml up --build -d
             echo ">>> Deployment to private1 completed!"
           EOF
-          
-      #Private2
-      - name: Deploy to Private2
+
+      - name: Deploy to Private2 (via SSM)
         run: |
-          ssh -o StrictHostKeyChecking=no private2 << 'EOF'
+          ssh private2-ssm << EOF
             set -e
-            cd /home/ec2-user/closet-search
+            cd /home/$DEPLOY_USER/closet-search
             git remote set-url origin https://github.com/summer-hackathon-c/closet-search.git
             git fetch --all
             git reset --hard origin/main
