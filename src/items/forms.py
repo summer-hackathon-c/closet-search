@@ -53,7 +53,7 @@ class CustomUserCreationForm(forms.ModelForm):
 
 
 # アイテム新規登録
-class ItemForm(forms.ModelForm):
+class ItemCreateForm(forms.ModelForm):
     class Meta:
         model = Item
         fields = ["purchase_date", "price", "description"]

@@ -1,5 +1,3 @@
-# from django.shortcuts import render
-# from django.contrib.auth.views import LoginView
 import os
 import uuid
 from django.views import View
@@ -7,7 +5,7 @@ from django.shortcuts import render, redirect
 from django.core.files.storage import default_storage
 from django.views.generic import CreateView, ListView
 from django.urls import reverse_lazy
-from .forms import CustomUserCreationForm, ItemForm, PhotoUploadForm
+from .forms import CustomUserCreationForm, ItemCreateForm, PhotoUploadForm
 from .models import Item, ItemPhoto
 from django.contrib.auth import get_user_model
 from django.contrib import messages
@@ -45,7 +43,7 @@ class ItemsCreateView(View):
             request,
             self.template_name,
             {
-                "form": ItemForm(),  # アイテム登録フォーム
+                "form": ItemCreateForm(),  # アイテム登録フォーム
                 "photo_form": PhotoUploadForm(),  # 画像アップロードフォーム
             },
         )
@@ -53,19 +51,20 @@ class ItemsCreateView(View):
     # POSTリクエスト（登録処理）
     def post(self, request, *args, **kwargs):
         # 送信データをフォームにバインド
-        form = ItemForm(request.POST)
+        form = ItemCreateForm(request.POST)
         photo_form = PhotoUploadForm(request.POST, request.FILES)
 
         # フォームが無効な場合はエラーを表示して再描画
         if not form.is_valid() or not photo_form.is_valid():
             messages.error(
-                request, f"ItemForm: {form.errors} / PhotoForm: {photo_form.errors}"
+                request,
+                f"ItemCreateForm: {form.errors} / PhotoForm: {photo_form.errors}",
             )
             return render(
                 request, self.template_name, {"form": form, "photo_form": photo_form}
             )
 
-        # 仮のユーザーを取得（未実装のログイン機能の代わり）
+        # (TODO)ログイン機能が実装されたら削除する
         dummy_user = User.objects.first()
         if dummy_user is None:
             messages.error(request, "ユーザーが存在しません。先に1件作成してください。")
@@ -77,7 +76,7 @@ class ItemsCreateView(View):
         item = form.save(commit=False)
         item.user = dummy_user
 
-        # seasonは暫定で以下のように設定
+        # (TODO)seasonは暫定で以下のように設定
         item.season = 0
         item.save()
 
