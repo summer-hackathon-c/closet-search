@@ -3,21 +3,21 @@ name: Auto Deploy to style-log.com (Docker Compose via SSM)
 on:
   push:
     branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     env:
-      AWS_REGION: ap-northeast-1
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
 
     steps:
       # 0) ソース取得
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 1) AWS 認証
-
-      # 既存キーを使う場合（Secrets に保存してある場合）
+      # 1) AWS 認証（Secrets のキーを使用）
       - name: Configure AWS credentials (Access Keys)
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -25,56 +25,59 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      # 2) Session Manager Plugin をランナーに入れる（必須）
+      # 1.5) 認証の疎通確認
+      - name: Verify AWS identity
+        run: aws sts get-caller-identity
+
+      # 2) Session Manager Plugin をランナーにインストール
       - name: Install Session Manager Plugin
         run: |
+          set -e
           curl -sL "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb" -o /tmp/ssm-plugin.deb
           sudo dpkg -i /tmp/ssm-plugin.deb
           session-manager-plugin --version
 
-      # 3) SSH 秘密鍵をAgentへ（SSH over SSMで使う場合）
-      - name: Setup SSH key
+      # 3) SSH 秘密鍵をAgentへ登録（DEPLOY_KEY）
+      - name: Setup SSH key (ssh-agent)
         uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.DEPLOY_KEY }}
 
-      # 4) SSH config（SSM用）
+      # 4) SSH config（SSM用：ssh-agentの鍵を自動利用）
       - name: Setup SSH Config for SSM
         run: |
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
-          cat > ~/.ssh/config << 'EOF'
+          cat > ~/.ssh/config << EOF
           Host private1-ssm
             HostName i-06038da6332891790
-            User ec2-user
-            IdentityFile ~/.ssh/id_rsa
-            IdentitiesOnly yes
-            ProxyCommand /bin/sh -lc 'aws ssm start-session --region ap-northeast-1 --target %h --document-name AWS-StartSSHSession --parameters "portNumber=%p"'
+            User $DEPLOY_USER
+            ProxyCommand /bin/sh -lc 'aws ssm start-session --region $AWS_REGION --target %h --document-name AWS-StartSSHSession --parameters "portNumber=%p"'
 
           Host private2-ssm
             HostName i-0442d66d290cc9f1c
-            User ec2-user
-            IdentityFile ~/.ssh/id_rsa
-            IdentitiesOnly yes
-            ProxyCommand /bin/sh -lc 'aws ssm start-session --region ap-northeast-1 --target %h --document-name AWS-StartSSHSession --parameters "portNumber=%p"'
+            User $DEPLOY_USER
+            ProxyCommand /bin/sh -lc 'aws ssm start-session --region $AWS_REGION --target %h --document-name AWS-StartSSHSession --parameters "portNumber=%p"'
           EOF
           chmod 600 ~/.ssh/config
-          # known_hosts 確認を省くなら（任意）
-          echo -e "Host *\n  StrictHostKeyChecking no\n  UserKnownHostsFile /dev/null" >> ~/.ssh/config
+          # known_hosts チェック省略（本番で厳格化するなら管理してください）
+          printf "Host *\n  StrictHostKeyChecking no\n  UserKnownHostsFile /dev/null\n" >> ~/.ssh/config
+          # 解釈確認（デバッグ用）
+          ssh -G private1-ssm | grep -E '^(hostname|proxycommand)' || true
 
       # 5) SSM 経由の接続テスト
       - name: Test SSH via SSM - private1
-        run: ssh private1-ssm "echo 'Private1 via SSM OK'"
+        run: ssh -o ConnectTimeout=20 private1-ssm "echo 'Private1 via SSM OK'"
 
       - name: Test SSH via SSM - private2
-        run: ssh private2-ssm "echo 'Private2 via SSM OK'"
+        run: ssh -o ConnectTimeout=20 private2-ssm "echo 'Private2 via SSM OK'"
 
-      # 6) デプロイ（従来の処理をそのまま、宛先だけ -ssm に）
+      # 6) デプロイ（Docker Compose）
       - name: Deploy to Private1 (via SSM)
         run: |
-          ssh private1-ssm << 'EOF'
+          ssh private1-ssm << EOF
             set -e
-            cd /home/ec2-user/closet-search
+            cd /home/$DEPLOY_USER/closet-search
             git remote set-url origin https://github.com/summer-hackathon-c/closet-search.git
             git fetch --all
             git reset --hard origin/main
@@ -85,9 +88,9 @@ jobs:
 
       - name: Deploy to Private2 (via SSM)
         run: |
-          ssh private2-ssm << 'EOF'
+          ssh private2-ssm << EOF
             set -e
-            cd /home/ec2-user/closet-search
+            cd /home/$DEPLOY_USER/closet-search
             git remote set-url origin https://github.com/summer-hackathon-c/closet-search.git
             git fetch --all
             git reset --hard origin/main
