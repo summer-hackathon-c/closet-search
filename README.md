@@ -40,20 +40,20 @@ copy .env.example .env
 docker compose -f docker-compose.dev.yml up --build -d
 ```
 
-### 4.1 マイグレーション関連コマンド一覧
+### 4 マイグレーション関連コマンド一覧
 buildのマイグレーションでエラーが起きたら、単独で以下のマイグレーションコマンド試しても良いかもしれません。
 
-#### 4.2 マイグレーションファイルを作成
+#### 4.1 マイグレーションファイルを作成
 ```bash
 docker compose -f docker-compose.dev.yml exec django python manage.py makemigrations
 ```
 
-#### 4.3 マイグレーションを実行（テーブル作成など）
+#### 4.2 マイグレーションを実行（テーブル作成など）
 ```bash
 docker compose -f docker-compose.dev.yml exec django python manage.py migrate
 ```
 
-#### 4.4 他ブランチで追加・変更されたマイグレーションを現在のブランチに反映する手順
+#### 4.3 他ブランチで追加・変更されたマイグレーションを現在のブランチに反映する手順
 
 1.現在のブランチで該当アプリのマイグレーションを一旦リセット
 ```bash
@@ -70,7 +70,7 @@ git merge develop
 docker compose -f docker-compose.dev.yml exec django python manage.py migrate
 ```
 
-#### 4.5 マイグレーション履歴確認コマンド
+#### 4.4 マイグレーション履歴確認コマンド
 ```bash
 docker compose -f docker-compose.dev.yml exec django python manage.py showmigrations
 ```
