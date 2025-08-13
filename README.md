@@ -36,50 +36,60 @@ copy .env.example .env
 
 以下のコマンドでコンテナをビルド＆起動します：
 
-開発環境用
 ```bash
 docker compose -f docker-compose.dev.yml up --build -d
 ```
 
-本番環境用
-```bash
-docker compose -f docker-compose.prod.yml up --build -d
-```
+### 4.1 マイグレーション関連コマンド一覧
+buildのマイグレーションでエラーが起きたら、単独で以下のマイグレーションコマンド試しても良いかもしれません。
 
-### 3.1 マイグレーション（DBテーブル作成）
-buildのマイグレーションでエラーが起きたら、単独で以下のマーグレーションコマンド試しても良いかもしれません。
-
-#### 3.1.1. マイグレーションファイルを作成
+#### 4.2 マイグレーションファイルを作成
 ```bash
 docker compose -f docker-compose.dev.yml exec django python manage.py makemigrations
 ```
 
-#### 3.1.2. マイグレーションを実行（テーブル作成など）
+#### 4.3 マイグレーションを実行（テーブル作成など）
 ```bash
 docker compose -f docker-compose.dev.yml exec django python manage.py migrate
 ```
 
+#### 4.4 他ブランチで追加・変更されたマイグレーションを現在のブランチに反映する手順
 
-### 4.ブラウザで動作確認
+1.現在のブランチで該当アプリのマイグレーションを一旦リセット
+```bash
+docker compose -f docker-compose.dev.yml exec django python manage.py migrate items zero
+```
+
+2.developブランチで更新されたマイグレーションファイルを取り込む
+```bash
+git merge develop
+```
+
+3.取り込んだマイグレーションを適用
+```bash
+docker compose -f docker-compose.dev.yml exec django python manage.py migrate
+```
+
+#### 4.5 マイグレーション履歴確認コマンド
+```bash
+docker compose -f docker-compose.dev.yml exec django python manage.py showmigrations
+```
+
+### 5.ブラウザで動作確認
 以下の URL にアクセスします：
 
 👉 http://localhost:8000
 
 「The install worked successfully!」と表示されれば、セットアップ成功です。
 
-### 5.Djangoプロジェクト削除
+### 6.Djangoプロジェクト削除
 
 開発環境用
 ```bash
 docker compose -f docker-compose.dev.yml down
 ```
 
-本番環境用
-```bash
-docker compose -f docker-compose.prod.yml down
-```
-
-### 6.コンテナ内部に入るコマンド
+### 7.コンテナ内部に入るコマンド
 
 Django コンテナ
 ```bash
@@ -91,12 +101,12 @@ MySQL コンテナ
 docker compose -f docker-compose.dev.yml exec db /bin/bash
 ```
 
-### 7.コンテナ内から MySQL にログイン
+### 8.コンテナ内から MySQL にログイン
 ```bash
 docker compose -f docker-compose.dev.yml exec db mysql -uapp_user -papp_pass app_db
 ```
 
-### 8.Ruffコマンド
+### 9.Ruffコマンド
 
 Lint(コードチェック& 自動修正)
 
@@ -116,13 +126,13 @@ Format（コード整形）
 make format
 ```
 
-### 9.コンテナの状態を確認コマンド
+### 10.コンテナの状態を確認コマンド
 
 ```bash
 docker compose -f docker-compose.dev.yml ps
 ```
 
-### 10.ログ確認コマンド（エラーが出た時に試してください。）
+### 11.ログ確認コマンド（エラーが出た時に試してください。）
 
 Django アプリのログを確認
 
