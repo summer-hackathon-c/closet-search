@@ -1,5 +1,6 @@
 from django import forms
 from .models import User
+from .models import Item
 
 
 # ユーザー新規登録
@@ -49,3 +50,27 @@ class CustomUserCreationForm(forms.ModelForm):
         if User.objects.filter(email=email).exists():
             raise forms.ValidationError("このメールアドレスは既に登録されています。")
         return email
+
+
+# アイテム新規登録
+class ItemCreateForm(forms.ModelForm):
+    class Meta:
+        model = Item
+        fields = ["purchase_date", "price", "description"]
+        labels = {
+            "purchase_date": "購入日",
+            "price": "価格",
+            "description": "説明",
+        }
+
+
+# 画像アップロード
+class PhotoUploadForm(forms.Form):
+    # 複数枚アップロード
+    images = forms.FileField(
+        label="画像ファイル（複数可）",
+        widget=forms.ClearableFileInput(
+            attrs={"multiple": True, "accept": "image/*", "id": "images-input"}
+        ),
+        required=False,
+    )

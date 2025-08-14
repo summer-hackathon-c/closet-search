@@ -173,3 +173,9 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Docker内からのアクセス許可
 ALLOWED_HOSTS = ["*"]
+
+# 画像の格納場所
+MEDIA_ROOT = BASE_DIR / "media/"
+
+# 画像のURL
+MEDIA_URL = "/media/"
