@@ -4,9 +4,9 @@
 
 {% block content %}
 <h2>登録アイテム一覧</h2>
-{% comment %}
-    一旦アイテムの表示を追加します。
-{% endcomment %}
+<a href="{% url 'item-create' %}" class="btn btn-primary">
+    追加
+</a>
 {% if items %}
     {% for item in items %}
         <li>{{ item.purchase_date }}</li>
