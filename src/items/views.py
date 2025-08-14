@@ -32,7 +32,7 @@ class ItemListView(ListView):
 
 
 # アイテム新規登録
-class ItemsCreateView(View):
+class ItemCreateView(View):
     # 許可するHTTPメソッドを制限（GETとPOSTのみ）
     http_method_names = ["get", "post"]
     template_name = "items/create.html"
