@@ -1,6 +1,7 @@
 from django import forms
-from .models import User
-from .models import Item
+from .models import User, Item
+from django.contrib.auth import authenticate
+from django.forms import ValidationError
 
 
 # ユーザー新規登録
@@ -50,6 +51,49 @@ class CustomUserCreationForm(forms.ModelForm):
         if User.objects.filter(email=email).exists():
             raise forms.ValidationError("このメールアドレスは既に登録されています。")
         return email
+
+
+# ユーザーログイン画面
+class LoginForm(forms.Form):
+    # 入力フォームの作成
+    email = forms.EmailField(
+        label="", widget=forms.EmailInput(attrs={"placeholder": "email"})
+    )
+    password = forms.CharField(
+        label="", widget=forms.PasswordInput(attrs={"placeholder": "Password"})
+    )
+
+    # フォームインスタンスの初期化処理（承認済ユーザー情報を保持できる）
+    def __init__(self, *args, request=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.request = request  # requestを保持(必要であれば)
+        self.user = None
+
+    # ユーザー情報の検証
+    def clean(self):
+        # バリデーション済の入力データ
+        # (ユーザーによって入力された値が定義されたルールに従ってチェックされ、問題がないと判断されたデータ)
+        cleaned_data = super().clean()
+        email = cleaned_data.get("email")
+        password = cleaned_data.get("password")
+
+        # ユーザーがログイン可能かの判定
+        if email and password:
+            user = authenticate(
+                email=email, password=password
+            )  # 入力されたユーザー情報が正しいかを確認
+            if user is None:
+                raise ValidationError(
+                    "メールアドレスまたはパスワードが正しくありません。"
+                )
+            else:
+                self.user = user  # 認証に成功したユーザー情報を保存
+        return cleaned_data  # 認証済データを次の処理に渡す
+
+    def get_user(self):
+        return (
+            self.user
+        )  # views.pyにて使用するため、保存しておいたユーザー情報を取り出す
 
 
 # アイテム新規登録

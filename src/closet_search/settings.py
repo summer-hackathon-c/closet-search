@@ -77,6 +77,10 @@ WSGI_APPLICATION = "closet_search.wsgi.application"
 
 AUTH_USER_MODEL = "items.User"
 
+AUTHENTICATION_BACKENDS = [
+    "items.backends.EmailBackend",
+]
+
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 

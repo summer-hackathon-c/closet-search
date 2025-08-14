@@ -1,14 +1,17 @@
+# from django.shortcuts import render
 import os
 import uuid
+from django.contrib import messages
+from django.contrib.auth.views import LoginView
+from django.contrib.auth import login, get_user_model
 from django.views import View
-from django.shortcuts import render, redirect
-from django.core.files.storage import default_storage
 from django.views.generic import CreateView, ListView
 from django.urls import reverse_lazy
-from .forms import CustomUserCreationForm, ItemCreateForm, PhotoUploadForm
+from django.utils.timezone import now
+from django.shortcuts import render, redirect
+from django.core.files.storage import default_storage
 from .models import Item, ItemPhoto
-from django.contrib.auth import get_user_model
-from django.contrib import messages
+from .forms import CustomUserCreationForm, LoginForm, ItemCreateForm, PhotoUploadForm
 
 User = get_user_model()
 
@@ -22,6 +25,26 @@ class SignUpView(CreateView):
     form_class = CustomUserCreationForm
     template_name = "registration/signup.html"
     success_url = reverse_lazy("login")
+
+
+# ユーザーログイン
+class UserLoginView(LoginView):
+    form_class = LoginForm
+    template_name = "registration/login.html"
+
+    # ログイン状態の保持
+    # form.pyにてバリデーション成功すると以下処理が実行される
+    def form_valid(self, form):
+        user = form.get_user()  # 認証に成功したuserインスタンス
+        login(
+            self.request, user
+        )  # 認証済みユーザーをセッションに登録し、以降のリクエストでログイン状態を維持する
+        user.last_login = now()
+        user.save()
+        return super().form_valid(form)  # 標準のリダイレクト処理などを実行
+
+    def get_success_url(self):
+        return reverse_lazy("index")
 
 
 # アイテム一覧
