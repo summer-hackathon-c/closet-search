@@ -1,5 +1,5 @@
 from django import forms
-from .models import User
+from .models import User, Item
 from django.contrib.auth import authenticate
 from django.forms import ValidationError
 
@@ -53,6 +53,7 @@ class CustomUserCreationForm(forms.ModelForm):
         return email
 
 
+
 # ユーザーログイン画面
 class LoginForm(forms.Form):
     # 入力フォームの作成
@@ -94,3 +95,27 @@ class LoginForm(forms.Form):
         return (
             self.user
         )  # views.pyにて使用するため、保存しておいたユーザー情報を取り出す
+
+# アイテム新規登録
+class ItemCreateForm(forms.ModelForm):
+    class Meta:
+        model = Item
+        fields = ["purchase_date", "price", "description"]
+        labels = {
+            "purchase_date": "購入日",
+            "price": "価格",
+            "description": "説明",
+        }
+
+
+# 画像アップロード
+class PhotoUploadForm(forms.Form):
+    # 複数枚アップロード
+    images = forms.FileField(
+        label="画像ファイル（複数可）",
+        widget=forms.ClearableFileInput(
+            attrs={"multiple": True, "accept": "image/*", "id": "images-input"}
+        ),
+        required=False,
+    )
+
