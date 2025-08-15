@@ -5,7 +5,6 @@ from django.contrib import messages
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth import login, logout, get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin  # 上位に記載必要
-from django.contrib.auth import login, get_user_model
 from django.views import View
 from django.views.generic import CreateView, ListView
 from django.urls import reverse_lazy
@@ -54,6 +53,7 @@ class UserLoginView(LoginView):
 
     def get_success_url(self):
         return reverse_lazy("item-list")
+
 
 # ユーザーログアウト
 class UserLogoutView(LogoutView):
