@@ -105,53 +105,19 @@ class ItemCreateView(LoginRequiredMixin, View):
                 request, self.template_name, {"form": form, "photo_form": photo_form}
             )
 
-        # 1) 親を先に保存
-
+        # Itemモデルを保存（ユーザーとシーズンを設定）
         item = form.save(commit=False)
-
-        # 例：FK を持っているなら忘れずにセット
 
         item.user = request.user
 
         # (TODO)seasonは暫定で以下のように設定
         item.season = 0
-
         item.save()
 
         # M2M があればここで
-
         form.save_m2m()
 
-        # 2) 子（画像）を保存
-
-        # <input type="file" name="images" multiple> の想定
-
-        # for img in request.FILES.getlist("images"):
-            # ItemPhoto.objects.create(item=item, image=img)
-
-        # 3) 完了
-
-        return redirect("item-list")
-
-        # # Itemモデルを保存（ユーザーとシーズンを設定）
-        # item = form.save(commit=False)
-        # item.user = item.user = request.user
-
-        # item.user = request.user
-
-        # # アップロードされた複数画像を保存
-        # for img in request.FILES.getlist("images"):
-        #     ext = os.path.splitext(img.name)[1].lower()
-        #     filename = f"item_photos/{uuid.uuid4().hex}{ext}"
-        #     saved_path = default_storage.save(filename, img)
-        #     file_url = default_storage.url(saved_path)
-        #     ItemPhoto.objects.create(item=item, url=file_url)
-
-        # # 一覧ページへリダイレクト
-        # return redirect("item-list")
-
-        # 画像保存 → URL 取得
-
+        # 複数画像保存 → URL 取得
         for img in request.FILES.getlist("images"):
             # 拡張子を推定（なければ jpg など固定でもOK）
 
@@ -160,13 +126,13 @@ class ItemCreateView(LoginRequiredMixin, View):
             filename = f"items/{uuid.uuid4()}{ext}"
 
             # ストレージに保存
-
             saved_path = default_storage.save(filename, ContentFile(img.read()))
 
             # 公開URL（S3 等なら presigned の代わりに storage.url を使う想定）
-
             public_url = default_storage.url(saved_path)
 
             # ★フィールド名をモデルに合わせる（例：url）
-
             ItemPhoto.objects.create(item=item, url=public_url)
+
+        # 一覧ページへリダイレクト
+        return redirect("item-list")
