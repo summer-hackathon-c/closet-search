@@ -37,4 +37,7 @@
     {% block extra_js %}
         <script src="{% static 'js/preview.js' %}"></script>
     {% endblock %}
+
+    <a class="nav-link" href="{% url 'logout' %}">ログアウト</a>
+    
 {% endblock %}

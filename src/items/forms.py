@@ -1,7 +1,9 @@
 from django import forms
 from .models import User, Item
 from django.contrib.auth import authenticate
+from django.contrib.auth.forms import AuthenticationForm
 from django.forms import ValidationError
+
 
 
 # ユーザー新規登録
@@ -94,6 +96,29 @@ class LoginForm(forms.Form):
         return (
             self.user
         )  # views.pyにて使用するため、保存しておいたユーザー情報を取り出す
+
+# ユーザーログアウト画面
+class LogoutForm(AuthenticationForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # ラベルを消す
+        self.fields["username"].label = ""
+        self.fields["password"].label = ""
+
+        # プレースホルダを統一
+        self.fields["username"].widget = forms.EmailInput(
+            attrs={
+                "placeholder": "email",
+                "autocomplete": "username",
+                **self.fields["username"].widget.attrs,
+            }
+        )
+        self.fields["password"].widget.attrs.update({
+            "placeholder": "Password",
+            "autocomplete": "current-password",
+        })
+
 
 
 # アイテム新規登録

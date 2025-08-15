@@ -14,8 +14,10 @@
 
     <form method="post">
         {% csrf_token %}
-        {% comment %} {{ form.as_p }} {% endcomment %}
-        {% bootstrap_form form %}
+        {% for field in form %}
+            {# ラベルは消して、プレースホルダにラベル文字を入れる #}
+            {% bootstrap_field field show_label=False placeholder=field.label %}
+        {% endfor %}
 
         <div class="container mt-5">
             <button type="submit" class="btn btn-primary my-btn">ログイン</button>
