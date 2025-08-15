@@ -5,7 +5,6 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.forms import ValidationError
 
 
-
 # ユーザー新規登録
 class CustomUserCreationForm(forms.ModelForm):
     # 入力フィールドへ入力したパスワードは非表示で表示
@@ -97,6 +96,7 @@ class LoginForm(forms.Form):
             self.user
         )  # views.pyにて使用するため、保存しておいたユーザー情報を取り出す
 
+
 # ユーザーログアウト画面
 class LogoutForm(AuthenticationForm):
     def __init__(self, *args, **kwargs):
@@ -114,11 +114,12 @@ class LogoutForm(AuthenticationForm):
                 **self.fields["username"].widget.attrs,
             }
         )
-        self.fields["password"].widget.attrs.update({
-            "placeholder": "Password",
-            "autocomplete": "current-password",
-        })
-
+        self.fields["password"].widget.attrs.update(
+            {
+                "placeholder": "Password",
+                "autocomplete": "current-password",
+            }
+        )
 
 
 # アイテム新規登録

@@ -2,7 +2,7 @@
 import os
 import uuid
 from django.contrib import messages
-from django.contrib.auth.views import LoginView,LogoutView
+from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth import login, logout, get_user_model
 from django.views import View
 from django.views.generic import CreateView, ListView
@@ -11,7 +11,13 @@ from django.utils.timezone import now
 from django.shortcuts import render, redirect
 from django.core.files.storage import default_storage
 from .models import Item, ItemPhoto
-from .forms import CustomUserCreationForm, LoginForm,LogoutForm, ItemCreateForm, PhotoUploadForm
+from .forms import (
+    CustomUserCreationForm,
+    LoginForm,
+    LogoutForm,
+    ItemCreateForm,
+    PhotoUploadForm,
+)
 
 User = get_user_model()
 
@@ -46,6 +52,7 @@ class UserLoginView(LoginView):
     def get_success_url(self):
         return reverse_lazy("index")
 
+
 # ユーザーログアウト
 class UserLogoutView(LogoutView):
     template_name = "registration/login.html"
@@ -55,6 +62,7 @@ class UserLogoutView(LogoutView):
         logout(request)
         form = LogoutForm(request)
         return render(request, self.template_name, {"form": form})
+
 
 # アイテム一覧
 class ItemListView(ListView):
