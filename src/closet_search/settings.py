@@ -81,6 +81,8 @@ AUTHENTICATION_BACKENDS = [
     "items.backends.EmailBackend",
 ]
 
+LOGIN_URL = "/login"  # ログインしていないユーザーはログイン画面へ戻る
+
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
