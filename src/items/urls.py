@@ -8,5 +8,5 @@ urlpatterns = [
     path("", RedirectView.as_view(url="/login/", permanent=False)),
     path("login/", UserLoginView.as_view(), name="login"),
     path("items/create/", ItemCreateView.as_view(), name="item-create"),
-    path("items/<int:user_id>/", ItemListView.as_view(), name="item-list"),
+    path("items/", ItemListView.as_view(), name="item-list"),
 ]

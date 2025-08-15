@@ -10,8 +10,11 @@ from django.views.generic import CreateView, ListView
 from django.urls import reverse_lazy
 from django.utils.timezone import now
 from django.shortcuts import render, redirect
+
+from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
-from django.http import Http404
+
+# from django.http import Http404
 from .models import Item, ItemPhoto
 from .forms import CustomUserCreationForm, LoginForm, ItemCreateForm, PhotoUploadForm
 
@@ -43,7 +46,7 @@ class UserLoginView(LoginView):
         return super().form_valid(form)  # 標準のリダイレクト処理などを実行
 
     def get_success_url(self):
-        return reverse_lazy("item-list", kwargs={"user_id": self.request.user.id})
+        return reverse_lazy("item-list")
 
 
 # アイテム一覧表示
@@ -51,19 +54,12 @@ class ItemListView(LoginRequiredMixin, ListView):
     template_name = "items/index.html"
     context_object_name = "items"  # テンプレートにて使用する変数名
 
-    # 一覧表示に必要な情報（モデルから取り出したデータの集まり）を定義
+    # 一覧表示に必要な情報（モデルから取り出したデータの集まり）を定義。
     def get_queryset(self):
-        user_id = self.kwargs.get("user_id")  # URLパラメーターよりuser_idを取得
-        try:
-            user = User.objects.get(pk=user_id)  # user_idを使用しユーザー情報を取得
-        except User.DoesNotExist:
-            raise Http404("ユーザーが見つかりません")
-
-        # ログイン状態であっても、他人のデータへアクセスできないように設定
-        if self.request.user != user:
-            raise Http404("ほかのユーザーのアイテムは表示できません")
-
-        self.profile_user = user  # contextに渡すために一時的に保存
+        user = self.request.user  # ログインしているユーザー情報を取得
+        self.profile_user = (
+            user  # contextに渡すために一時的に保存（今後の汎用性を考え記載）
+        )
 
         return Item.objects.filter(
             user=user, delete_flag=False
@@ -77,7 +73,7 @@ class ItemListView(LoginRequiredMixin, ListView):
 
 
 # アイテム新規登録
-class ItemCreateView(View):
+class ItemCreateView(LoginRequiredMixin, View):
     # 許可するHTTPメソッドを制限（GETとPOSTのみ）
     http_method_names = ["get", "post"]
     template_name = "items/create.html"
@@ -109,29 +105,68 @@ class ItemCreateView(View):
                 request, self.template_name, {"form": form, "photo_form": photo_form}
             )
 
-        # (TODO)ログイン機能が実装されたら削除する
-        dummy_user = User.objects.first()
-        if dummy_user is None:
-            messages.error(request, "ユーザーが存在しません。先に1件作成してください。")
-            return render(
-                request, self.template_name, {"form": form, "photo_form": photo_form}
-            )
+        # 1) 親を先に保存
 
-        # Itemモデルを保存（ユーザーとシーズンを設定）
         item = form.save(commit=False)
-        item.user = dummy_user
+
+        # 例：FK を持っているなら忘れずにセット
+
+        item.user = request.user
 
         # (TODO)seasonは暫定で以下のように設定
         item.season = 0
+
         item.save()
 
-        # アップロードされた複数画像を保存
-        for img in request.FILES.getlist("images"):
-            ext = os.path.splitext(img.name)[1].lower()
-            filename = f"item_photos/{uuid.uuid4().hex}{ext}"
-            saved_path = default_storage.save(filename, img)
-            file_url = default_storage.url(saved_path)
-            ItemPhoto.objects.create(item=item, url=file_url)
+        # M2M があればここで
 
-        # 一覧ページへリダイレクト
+        form.save_m2m()
+
+        # 2) 子（画像）を保存
+
+        # <input type="file" name="images" multiple> の想定
+
+        # for img in request.FILES.getlist("images"):
+            # ItemPhoto.objects.create(item=item, image=img)
+
+        # 3) 完了
+
         return redirect("item-list")
+
+        # # Itemモデルを保存（ユーザーとシーズンを設定）
+        # item = form.save(commit=False)
+        # item.user = item.user = request.user
+
+        # item.user = request.user
+
+        # # アップロードされた複数画像を保存
+        # for img in request.FILES.getlist("images"):
+        #     ext = os.path.splitext(img.name)[1].lower()
+        #     filename = f"item_photos/{uuid.uuid4().hex}{ext}"
+        #     saved_path = default_storage.save(filename, img)
+        #     file_url = default_storage.url(saved_path)
+        #     ItemPhoto.objects.create(item=item, url=file_url)
+
+        # # 一覧ページへリダイレクト
+        # return redirect("item-list")
+
+        # 画像保存 → URL 取得
+
+        for img in request.FILES.getlist("images"):
+            # 拡張子を推定（なければ jpg など固定でもOK）
+
+            ext = os.path.splitext(img.name)[1] or ".jpg"
+
+            filename = f"items/{uuid.uuid4()}{ext}"
+
+            # ストレージに保存
+
+            saved_path = default_storage.save(filename, ContentFile(img.read()))
+
+            # 公開URL（S3 等なら presigned の代わりに storage.url を使う想定）
+
+            public_url = default_storage.url(saved_path)
+
+            # ★フィールド名をモデルに合わせる（例：url）
+
+            ItemPhoto.objects.create(item=item, url=public_url)
