@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}アイテム編集{% endblock %}
+
+{% block content %}
+    <h2>アイテム編集</h2>
+    {% comment %}
+        一旦フォームの表示を追加します。
+    {% endcomment %}
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">更新する</button>
+    </form>
+{% endblock %}

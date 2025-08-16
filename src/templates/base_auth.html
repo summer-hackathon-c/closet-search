@@ -1,0 +1,37 @@
+{% load static %}
+{% load django_bootstrap5 %}
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}認証{% endblock %}</title>
+
+    {% bootstrap_css %}
+    <link rel="stylesheet" href="{% static 'css/base_auth.css' %}">
+
+    {% block extra_css %}{% endblock %}
+</head>
+<body >
+    <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+        <div class="text-white p-3">
+            <header>
+                <h1><img src="{% static 'img/logo_white.png' %}" alt="ロゴ"></h1>
+            </header>
+
+            <main>
+                {% block content %}{% endblock %}
+            </main>
+
+            <footer class="fixed-bottom text-black text-center py-2">
+                <p>&copy; 2025 Summer C team</p>
+            </footer>
+        </div>
+    </div>
+
+    {# ページ固有のJSを差し込みたい場合 #}
+    {% bootstrap_javascript %}
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

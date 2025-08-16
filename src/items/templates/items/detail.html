@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}アイテム詳細{% endblock %}
+
+{% block content %}
+    <h2>アイテム詳細</h2>
+    {% comment %}
+        一旦アイテムの表示を追加します。
+    {% endcomment %}
+    <li>{{ item.purchase_date}}</li>
+    <li>{{ item.price}}</li>
+    <li>{{ item.description}}</li>
+    <li>
+        {# photos は View 側 の設定による #}
+        {% if item.photos %}
+            <img src="{{ item.photos.0.image.url }}" alt="写真" class="item-photo">
+        {% endif %}
+    </li>
+    {{ item }}
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "base_auth.html" %}
+{% load static %}
+{% load django_bootstrap5 %}
+
+{% block title %}ログイン{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/login.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="">
+    <h2 class="catch-copy">アイテムを記録しよう</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        {% comment %} {{ form.as_p }} {% endcomment %}
+        {% bootstrap_form form %}
+
+        <div class="container mt-5">
+            <button type="submit" class="btn btn-primary my-btn">ログイン</button>
+        </div>   
+    </form>
+
+    <p class="to-login">
+        アカウントをお持ちでない方は、<a href="{% url 'signup' %}">新規登録</a>へ
+    </p>
+</div>
+{% endblock %}

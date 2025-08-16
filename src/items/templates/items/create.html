@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}アイテム新規登録{% endblock %}
+
+{% block content %}
+    <h2>アイテム新規登録</h2>
+
+    {% if messages %}
+        <ul>
+            {% for message in messages %}
+                <li style="color:red">{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        {{ form.non_field_errors }}
+        {{ form.as_p }}
+
+        <h3>画像アップロード</h3>
+        {{ photo_form.non_field_errors }}
+        <div>
+            {{ photo_form.images.label_tag }} {{ photo_form.images }}
+            {% for e in photo_form.images.errors %}
+                <div style="color:red">{{ e }}</div>
+            {% endfor %}
+        </div>
+
+        <div id="preview" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;"></div>
+
+        <button type="submit">登録する</button>
+    </form>
+
+    {% block extra_js %}
+        <script src="{% static 'js/preview.js' %}"></script>
+    {% endblock %}
+{% endblock %}

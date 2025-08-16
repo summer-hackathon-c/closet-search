@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "items",
     # "storages",
+    "django_bootstrap5",
 ]
 
 MIDDLEWARE = [
@@ -59,7 +60,7 @@ ROOT_URLCONF = "closet_search.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [os.path.join(BASE_DIR, "templates")],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -74,6 +75,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "closet_search.wsgi.application"
 
+AUTH_USER_MODEL = "items.User"
+
+AUTHENTICATION_BACKENDS = [
+    "items.backends.EmailBackend",
+]
+
+LOGIN_URL = "/login"  # ログインしていないユーザーはログイン画面へ戻る
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
@@ -158,7 +166,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = "static/"
+STATIC_URL = "/static/"
+
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -167,3 +179,9 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Docker内からのアクセス許可
 ALLOWED_HOSTS = ["*"]
+
+# 画像の格納場所
+MEDIA_ROOT = BASE_DIR / "media/"
+
+# 画像のURL
+MEDIA_URL = "/media/"
