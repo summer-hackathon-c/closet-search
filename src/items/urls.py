@@ -1,6 +1,12 @@
 from django.urls import path
 from django.views.generic import RedirectView
-from .views import SignUpView, UserLoginView, ItemCreateView, ItemListView
+from .views import (
+    SignUpView,
+    UserLoginView,
+    ItemCreateView,
+    ItemListView,
+    ItemDetailView,
+)
 
 
 urlpatterns = [
@@ -9,4 +15,5 @@ urlpatterns = [
     path("login/", UserLoginView.as_view(), name="login"),
     path("items/create/", ItemCreateView.as_view(), name="item-create"),
     path("items/", ItemListView.as_view(), name="item-list"),
+    path("items/<int:pk>", ItemDetailView.as_view(), name="item_detail"),
 ]
