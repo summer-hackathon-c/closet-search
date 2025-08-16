@@ -6,7 +6,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin  # 上位に記載必�
 from django.contrib.auth.views import LoginView
 from django.contrib.auth import login, get_user_model
 from django.views import View
-from django.views.generic import CreateView, ListView
+from django.views.generic import CreateView, ListView, DetailView
 from django.urls import reverse_lazy
 from django.utils.timezone import now
 from django.shortcuts import render, redirect
@@ -127,3 +127,17 @@ class ItemCreateView(LoginRequiredMixin, View):
 
         # 一覧ページへリダイレクト
         return redirect("item-list")
+
+
+# アイテム詳細
+class ItemDetailView(LoginRequiredMixin, DetailView):
+    template_name = "items/detail.html"
+    context_object_name = "item"
+
+    # Itemクラスの中のログインしているユーザーの商品を取得
+    def get_queryset(self):
+        user = self.request.user
+
+        return Item.objects.filter(
+            user=user, delete_flag=False
+        )  # 削除されていないアイテム
