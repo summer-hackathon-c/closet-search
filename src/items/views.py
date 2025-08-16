@@ -57,19 +57,10 @@ class ItemListView(LoginRequiredMixin, ListView):
     # 一覧表示に必要な情報（モデルから取り出したデータの集まり）を定義。
     def get_queryset(self):
         user = self.request.user  # ログインしているユーザー情報を取得
-        self.profile_user = (
-            user  # contextに渡すために一時的に保存（今後の汎用性を考え記載）
-        )
 
         return Item.objects.filter(
             user=user, delete_flag=False
         )  # ユーザーに紐づく、論理削除されていないアイテムを取得
-
-    # profile_userをテンプレートにて使用するため定義
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["profile_user"] = self.profile_user
-        return context
 
 
 # アイテム新規登録
