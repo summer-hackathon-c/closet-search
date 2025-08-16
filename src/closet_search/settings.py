@@ -185,3 +185,16 @@ MEDIA_ROOT = BASE_DIR / "media/"
 
 # 画像のURL
 MEDIA_URL = "/media/"
+
+# CSRF の信頼オリジン（スキーム付きで！）
+CSRF_TRUSTED_ORIGINS = [
+    "https://style-log.com",
+    "https://www.style-log.com",
+]
+
+# --- 追加するセキュリティ関連設定 ---
+USE_X_FORWARDED_HOST = True
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
