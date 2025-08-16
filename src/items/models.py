@@ -74,7 +74,7 @@ class Item(models.Model):
 
     # データベースを管理する画面で、表示させる基準となるもの
     def __str__(self):
-        return self.id
+        return str(self.id)
 
     class Meta:
         ordering = ["purchase_date"]  # 左記を基準にしてデータを並び替える
