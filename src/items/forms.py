@@ -53,7 +53,6 @@ class CustomUserCreationForm(forms.ModelForm):
             raise forms.ValidationError("このメールアドレスは既に登録されています。")
         return email
 
-
 # ユーザーログイン画面
 class LoginForm(forms.Form):
     # 入力フォームの作成
@@ -95,32 +94,6 @@ class LoginForm(forms.Form):
         return (
             self.user
         )  # views.pyにて使用するため、保存しておいたユーザー情報を取り出す
-
-
-# ユーザーログアウト画面
-class LogoutForm(AuthenticationForm):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        # ラベルを消す
-        self.fields["username"].label = ""
-        self.fields["password"].label = ""
-
-        # プレースホルダを統一
-        self.fields["username"].widget = forms.EmailInput(
-            attrs={
-                "placeholder": "email",
-                "autocomplete": "username",
-                **self.fields["username"].widget.attrs,
-            }
-        )
-        self.fields["password"].widget.attrs.update(
-            {
-                "placeholder": "Password",
-                "autocomplete": "current-password",
-            }
-        )
-
 
 # アイテム新規登録
 class ItemCreateForm(forms.ModelForm):

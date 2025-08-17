@@ -83,6 +83,8 @@ AUTHENTICATION_BACKENDS = [
 
 LOGIN_URL = "/login"  # ログインしていないユーザーはログイン画面へ戻る
 
+LOGOUT_REDIRECT_URL = "login" # ログアウトしたユーザーはログイン画面へ戻る
+
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
