@@ -83,6 +83,8 @@ AUTHENTICATION_BACKENDS = [
 
 LOGIN_URL = "/login"  # ログインしていないユーザーはログイン画面へ戻る
 
+LOGOUT_REDIRECT_URL = "login"  # ログアウトしたユーザーはログイン画面へ戻る
+
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
@@ -168,9 +170,13 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 
+# 開発：テンプレやフロント資産の“元”フォルダ
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
+
+# 本番：collectstatic の出力先（Nginx が読む場所）
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field

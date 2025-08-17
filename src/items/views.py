@@ -6,7 +6,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin  # 上位に記載必�
 from django.contrib.auth.views import LoginView
 from django.contrib.auth import login, get_user_model
 from django.views import View
-from django.views.generic import CreateView, ListView
+from django.views.generic import CreateView, ListView, DetailView
 from django.urls import reverse_lazy
 from django.utils.timezone import now
 from django.shortcuts import render, redirect
@@ -16,7 +16,12 @@ from django.core.files.storage import default_storage
 
 # from django.http import Http404
 from .models import Item, ItemPhoto
-from .forms import CustomUserCreationForm, LoginForm, ItemCreateForm, PhotoUploadForm
+from .forms import (
+    CustomUserCreationForm,
+    LoginForm,
+    ItemCreateForm,
+    PhotoUploadForm,
+)
 
 User = get_user_model()
 
@@ -57,19 +62,10 @@ class ItemListView(LoginRequiredMixin, ListView):
     # 一覧表示に必要な情報（モデルから取り出したデータの集まり）を定義。
     def get_queryset(self):
         user = self.request.user  # ログインしているユーザー情報を取得
-        self.profile_user = (
-            user  # contextに渡すために一時的に保存（今後の汎用性を考え記載）
-        )
 
         return Item.objects.filter(
             user=user, delete_flag=False
         )  # ユーザーに紐づく、論理削除されていないアイテムを取得
-
-    # profile_userをテンプレートにて使用するため定義
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["profile_user"] = self.profile_user
-        return context
 
 
 # アイテム新規登録
@@ -136,3 +132,17 @@ class ItemCreateView(LoginRequiredMixin, View):
 
         # 一覧ページへリダイレクト
         return redirect("item-list")
+
+
+# アイテム詳細
+class ItemDetailView(LoginRequiredMixin, DetailView):
+    template_name = "items/detail.html"
+    context_object_name = "item"
+
+    # Itemクラスの中のログインしているユーザーの商品を取得
+    def get_queryset(self):
+        user = self.request.user
+
+        return Item.objects.filter(
+            user=user, delete_flag=False
+        )  # 削除されていないアイテム
