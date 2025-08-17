@@ -101,15 +101,16 @@ AWS_S3_CUSTOM_DOMAIN = (
 # ACLを使わずに、バケットポリシー / IAM で制御する
 AWS_DEFAULT_ACL = None
 
+# 静的ファイルの入力元（共通で必要）
+STATICFILES_DIRS = [BASE_DIR / "static"]
+
 if DEBUG:
     # ローカル開発用
     STATIC_URL = "/static/"
-    STATICFILES_DIRS = [BASE_DIR / "static"]
     STATIC_ROOT = BASE_DIR / "staticfiles"
 
     MEDIA_URL = "/media/"
     MEDIA_ROOT = BASE_DIR / "media/"
-
 else:
     # 本番はS3配信
     STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/static/"
