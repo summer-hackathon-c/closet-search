@@ -26,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-ua%dmju*3ycif15c198pbfyhusg+tpyvhd(*wxkt=p)4r0hzww"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = []
 
@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "items",
-    "storages",
+    # "storages",
     "django_bootstrap5",
 ]
 
@@ -83,59 +83,45 @@ AUTHENTICATION_BACKENDS = [
 
 LOGIN_URL = "/login"  # ログインしていないユーザーはログイン画面へ戻る
 
-LOGOUT_REDIRECT_URL = "login"  # ログアウトしたユーザーはログイン画面へ戻る
+LOGOUT_REDIRECT_URL = "/login/"  # ログアウトしたユーザーはログイン画面へ戻る
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 
-# S3の設定
-AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
-AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
-AWS_STORAGE_BUCKET_NAME = os.getenv("AWS_STORAGE_BUCKET_NAME")
-AWS_S3_REGION_NAME = os.getenv("AWS_S3_REGION_NAME", "ap-northeast-1")
-AWS_S3_CUSTOM_DOMAIN = (
-    f"{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com"
-)
+"""S3の設定
+AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
+AWS_S3_REGION_NAME = 'ap-northeast-1'
+AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
+"""
 
-# ACLを使わずに、バケットポリシー / IAM で制御する
-AWS_DEFAULT_ACL = None
+"""静的ファイルの設定
+STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/static/"
+STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+"""
 
-# 静的ファイルの入力元（共通で必要）
-STATICFILES_DIRS = [BASE_DIR / "static"]
-
-if DEBUG:
-    # ローカル開発用
-    STATIC_URL = "/static/"
-    STATIC_ROOT = BASE_DIR / "staticfiles"
-
-    MEDIA_URL = "/media/"
-    MEDIA_ROOT = BASE_DIR / "media/"
-else:
-    # 本番はS3配信
-    STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/static/"
-    STATICFILES_STORAGE = "closet_search.storage_backends.StaticStorage"
-
-    MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/media/"
-    DEFAULT_FILE_STORAGE = "closet_search.storage_backends.MediaStorage"
-
+"""メディアファイルの設定
+MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/media/"
+DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+"""
 
 DATABASES = {
     "default": {
-        # Writer
         "ENGINE": "django.db.backends.mysql",
-        "NAME": os.environ.get("DB_NAME"),
-        "USER": os.environ.get("DB_USER"),
-        "PASSWORD": os.environ.get("DB_PASSWORD"),
-        "HOST": os.environ.get("DB_HOST"),
+        "NAME": os.environ.get("DB_NAME", "app_db"),
+        "USER": os.environ.get("DB_USER", "app_user"),
+        "PASSWORD": os.environ.get("DB_PASSWORD", "app_pass"),
+        "HOST": os.environ.get("DB_HOST", "db"),  # ← None じゃなく "db" をデフォに
         "PORT": "3306",
     },
-    "replica": {  # Reader
+    "replica": {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": os.getenv("DB_NAME"),
-        "USER": os.getenv("DB_USER"),
-        "PASSWORD": os.getenv("DB_PASSWORD"),
-        "HOST": os.getenv("DB_HOST_REPLICA"),
+        "NAME": os.environ.get("DB_NAME", "app_db"),
+        "USER": os.environ.get("DB_USER", "app_user"),
+        "PASSWORD": os.environ.get("DB_PASSWORD", "app_pass"),
+        "HOST": os.environ.get("DB_HOST_REPLICA", "db"),  # ローカルならとりあえず db でOK
         "PORT": "3306",
     },
 }
@@ -175,6 +161,19 @@ USE_I18N = True
 USE_TZ = True
 
 
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/4.2/howto/static-files/
+
+STATIC_URL = "/static/"
+
+# 開発：テンプレやフロント資産の“元”フォルダ
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
+
+# 本番：collectstatic の出力先（Nginx が読む場所）
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
@@ -182,6 +181,12 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Docker内からのアクセス許可
 ALLOWED_HOSTS = ["*"]
+
+# 画像の格納場所
+MEDIA_ROOT = BASE_DIR / "media/"
+
+# 画像のURL
+MEDIA_URL = "/media/"
 
 # CSRF の信頼オリジン（スキーム付きで！）
 CSRF_TRUSTED_ORIGINS = [
