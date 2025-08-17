@@ -9,6 +9,14 @@
 </a>
 {% if items %}
     {% for item in items %}
+
+        {# バックエンド処理確認のため追記(はじめ) #}
+        <form method="POST" action="{% url 'item_delete' item.pk %}">
+            {% csrf_token %}
+            <button type="submit"> 削除</button>
+        </form>
+        {# バックエンド処理確認のため追記（終わり）#}
+        
         <li>
             <a href="{% url 'item_detail' item.pk %}" class="stretched-link">{{ item.purchase_date }}</a>
         </li>

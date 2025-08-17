@@ -112,12 +112,13 @@ class ItemTag(models.Model):
 class ItemPhoto(models.Model):
     url = models.CharField(max_length=255)
     item = models.ForeignKey(Item, on_delete=models.PROTECT)
+    delete_flag = models.BooleanField(default=False)  # default:削除されていない
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     # データベースを管理する画面で、以下を基準にして表示させる
     def __str__(self):
-        return self.id
+        return str(self.id)
 
     class Meta:
         ordering = ["id"]  # 左記を基準にしてデータを並び替える

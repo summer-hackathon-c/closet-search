@@ -6,7 +6,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin  # 上位に記載必�
 from django.contrib.auth.views import LoginView
 from django.contrib.auth import login, get_user_model
 from django.views import View
-from django.views.generic import CreateView, ListView, DetailView
+from django.views.generic import CreateView, ListView, DetailView, DeleteView
 from django.urls import reverse_lazy
 from django.utils.timezone import now
 from django.shortcuts import render, redirect
@@ -14,8 +14,12 @@ from django.shortcuts import render, redirect
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 
+from django.http import HttpResponseRedirect
 # from django.http import Http404
+
 from .models import Item, ItemPhoto
+
+# from django.forms.models import model_to_dict  # debug用に追加
 from .forms import (
     CustomUserCreationForm,
     LoginForm,
@@ -146,3 +150,27 @@ class ItemDetailView(LoginRequiredMixin, DetailView):
         return Item.objects.filter(
             user=user, delete_flag=False
         )  # 削除されていないアイテム
+
+
+# アイテム削除機能
+class ItemDeleteView(LoginRequiredMixin, DeleteView):
+    model = Item
+    context_object_name = "item"  # テンプレートにて使用する変数名
+    success_url = reverse_lazy("item-list")  # 削除後のリダイレクト先
+
+    # Itemモデルより削除アイテムのデータを取得し、delete_flagをTrueへ変更し保存
+    # 論理削除のため親クラスを呼び出さず、postメソッドをオーバーライドする
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()  # URLより削除対象の1つのデータを取得
+
+        # 削除済フラグをTrueにて保存
+        self.object.delete_flag = True
+        self.object.save()
+
+        # ItemPhotoモデルの情報もdelete_flagをTrueへ変更し保存
+        for photo in self.object.itemphoto_set.all():  # 削除対象のアイテムに紐づく写真（itemphoto_set)をすべて取り出し順番に処理する
+            photo.delete_flag = True
+            photo.save()
+
+        # Trueへ変更後、success_urlへリダイレクトする
+        return HttpResponseRedirect(self.get_success_url())
