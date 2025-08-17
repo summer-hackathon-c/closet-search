@@ -9,13 +9,15 @@
 </a>
 {% if items %}
     {% for item in items %}
-        <li>{{ item.purchase_date }}</li>
+        <li>
+            <a href="{% url 'item_detail' item.pk %}" class="stretched-link">{{ item.purchase_date }}</a>
+        </li>
         <li>{{ item.price }}</li>
         <li>{{ item.description }}</li>
         {% if item.itemphoto_set.all %}
             {% for p in item.itemphoto_set.all %}
                 <img src="{{ p.url }}" alt="写真"
-                     style="width:160px;height:120px;object-fit:cover;border-radius:6px;">
+                    style="width:160px;height:120px;object-fit:cover;border-radius:6px;">
             {% endfor %}
         {% else %}
             <span>No Image</span>
