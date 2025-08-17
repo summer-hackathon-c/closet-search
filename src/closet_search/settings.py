@@ -99,21 +99,23 @@ AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
 # ACLを使わずに、バケットポリシー / IAM で制御する
 AWS_DEFAULT_ACL = None
 
-if not DEBUG:
+if DEBUG:
+    # ローカル開発用
+    STATIC_URL = "/static/"
+    STATICFILES_DIRS = [BASE_DIR / "src" / "static"]
+    STATIC_ROOT = BASE_DIR / "staticfiles"
+
+    MEDIA_URL = "/media/"
+    MEDIA_ROOT = BASE_DIR / "media/"
+    
+else:
+    
     # 本番はS3配信
     STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/static/"
     STATICFILES_STORAGE = "closet_search.storage_backends.StaticStorage"
 
     MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/media/"
     DEFAULT_FILE_STORAGE = "closet_search.storage_backends.MediaStorage"
-else:
-    # ローカル開発用
-    STATIC_URL = "/static/"
-    STATICFILES_DIRS = [BASE_DIR / "static"]
-    STATIC_ROOT = BASE_DIR / "staticfiles"
-
-    MEDIA_URL = "/media/"
-    MEDIA_ROOT = BASE_DIR / "media/"
 
 
 DATABASES = {
