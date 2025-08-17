@@ -12,6 +12,10 @@ bash /wait-for-it.sh "${DB_HOST:-db}":3306 --timeout=30 --strict -- \
 echo "🚧 Running database migrations..."
 python manage.py migrate
 
+#collectstatic起動　静的ファイル（CSS/JS/画像など）を「本番用に1か所へまとめるコマンド」
+echo "🧹 Collect static..."
+python manage.py collectstatic --noinput
+
 # Gunicorn で本番サーバー起動
 echo "🚀 Starting Django production server with Gunicorn..."
 gunicorn closet_search.wsgi:application --bind 0.0.0.0:8000
