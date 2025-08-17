@@ -1,7 +1,6 @@
 from django import forms
 from .models import User, Item
 from django.contrib.auth import authenticate
-from django.contrib.auth.forms import AuthenticationForm
 from django.forms import ValidationError
 
 
