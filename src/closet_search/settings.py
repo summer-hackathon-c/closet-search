@@ -128,7 +128,7 @@ DATABASES = {
 }
 
 # 読取/書込を Writer/Replica に振り分けるルーター
-DATABASE_ROUTERS = ["project.db_routers.PrimaryReplicaRouter"]
+DATABASE_ROUTERS = ["closet_search.db_routers.PrimaryReplicaRouter"]
 
 
 # Password validation
