@@ -121,7 +121,9 @@ DATABASES = {
         "NAME": os.environ.get("DB_NAME", "app_db"),
         "USER": os.environ.get("DB_USER", "app_user"),
         "PASSWORD": os.environ.get("DB_PASSWORD", "app_pass"),
-        "HOST": os.environ.get("DB_HOST_REPLICA", "db"),  # ローカルならとりあえず db でOK
+        "HOST": os.environ.get(
+            "DB_HOST_REPLICA", "db"
+        ),  # ローカルならとりあえず db でOK
         "PORT": "3306",
     },
 }
