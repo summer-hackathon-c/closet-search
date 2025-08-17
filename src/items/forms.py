@@ -53,6 +53,7 @@ class CustomUserCreationForm(forms.ModelForm):
             raise forms.ValidationError("このメールアドレスは既に登録されています。")
         return email
 
+
 # ユーザーログイン画面
 class LoginForm(forms.Form):
     # 入力フォームの作成
@@ -94,6 +95,7 @@ class LoginForm(forms.Form):
         return (
             self.user
         )  # views.pyにて使用するため、保存しておいたユーザー情報を取り出す
+
 
 # アイテム新規登録
 class ItemCreateForm(forms.ModelForm):
