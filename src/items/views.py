@@ -2,9 +2,9 @@
 import os
 import uuid
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin  # 上位に記載必要
 from django.contrib.auth.views import LoginView
 from django.contrib.auth import login, get_user_model
-from django.contrib.auth.mixins import LoginRequiredMixin  # 上位に記載必要
 from django.views import View
 from django.views.generic import CreateView, ListView, DetailView
 from django.urls import reverse_lazy
