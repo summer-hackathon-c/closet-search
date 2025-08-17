@@ -124,7 +124,7 @@ DATABASES = {
         "PASSWORD": os.getenv("DB_PASSWORD"),
         "HOST": os.getenv("DB_HOST_REPLICA"),
         "PORT": "3306",
-},
+    },
 }
 
 # 読取/書込を Writer/Replica に振り分けるルーター
