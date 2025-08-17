@@ -88,21 +88,6 @@ LOGOUT_REDIRECT_URL = "login"  # ログアウトしたユーザーはログイ�
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-"""RDSの設定する場合
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.mysql",
-        "NAME": os.environ.get("DB_NAME"),
-        "USER": os.environ.get("DB_USER"),
-        "PASSWORD": os.environ.get("DB_PASSWORD"),
-        "HOST": os.environ.get("DB_HOST"),
-        "PORT": os.environ.get("DB_PORT"),
-        "OPTIONS": {
-            "init_command": "SET sql_mode='STRICT_TRANS_TABLES'",
-        },
-    }
-}
-"""
 
 """S3の設定
 AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
@@ -124,14 +109,26 @@ DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
 
 DATABASES = {
     "default": {
+        # Writer
         "ENGINE": "django.db.backends.mysql",
         "NAME": os.environ.get("DB_NAME"),
         "USER": os.environ.get("DB_USER"),
         "PASSWORD": os.environ.get("DB_PASSWORD"),
         "HOST": os.environ.get("DB_HOST"),
         "PORT": "3306",
-    }
+    },
+    "replica": {  # Reader
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": os.getenv("DB_NAME"),
+        "USER": os.getenv("DB_USER"),
+        "PASSWORD": os.getenv("DB_PASSWORD"),
+        "HOST": os.getenv("DB_HOST_REPLICA"),
+        "PORT": "3306",
+    },
 }
+
+# 読取/書込を Writer/Replica に振り分けるルーター
+DATABASE_ROUTERS = ["project.db_routers.PrimaryReplicaRouter"]
 
 
 # Password validation
