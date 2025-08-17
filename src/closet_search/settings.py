@@ -107,9 +107,8 @@ if DEBUG:
 
     MEDIA_URL = "/media/"
     MEDIA_ROOT = BASE_DIR / "media/"
-    
+
 else:
-    
     # 本番はS3配信
     STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/static/"
     STATICFILES_STORAGE = "closet_search.storage_backends.StaticStorage"
