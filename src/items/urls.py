@@ -18,4 +18,6 @@ urlpatterns = [
     path("items/", ItemListView.as_view(), name="item-list"),
     path("items/<int:pk>", ItemDetailView.as_view(), name="item_detail"),
     path("logout/", LogoutView.as_view(), name="logout"),
+    # TODO : 削除メソッド追加時、L22は削除してください。エラーにならないよう一旦Logoutに紐づけているだけですmm
+    path("<int:pk>/delete/", LogoutView.as_view(), name="item-delete"),
 ]
