@@ -99,10 +99,10 @@ AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
 if not DEBUG:
     # 本番はS3配信
     STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/static/"
-    STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+    STATICFILES_STORAGE = "closet_search.storage_backends.StaticStorage"
 
     MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/media/"
-    DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+    DEFAULT_FILE_STORAGE = "closet_search.storage_backends.MediaStorage"
 else:
     # ローカル開発用
     STATIC_URL = "/static/"
