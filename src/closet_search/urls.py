@@ -21,8 +21,13 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
+from django.http import HttpResponse
+
+def healthcheck(request):
+    return HttpResponse("OK", status=200)
 
 urlpatterns = [
+    path("healthz/", healthcheck),  # ターゲットグループのヘルスチェック対策
     path("admin/", admin.site.urls),
     path("", include("items.urls")),
 ]
