@@ -16,7 +16,12 @@ from django.core.files.storage import default_storage
 
 # from django.http import Http404
 from .models import Item, ItemPhoto
-from .forms import CustomUserCreationForm, LoginForm, ItemCreateForm, PhotoUploadForm
+from .forms import (
+    CustomUserCreationForm,
+    LoginForm,
+    ItemCreateForm,
+    PhotoUploadForm,
+)
 
 User = get_user_model()
 
