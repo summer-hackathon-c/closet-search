@@ -26,6 +26,7 @@ from .forms import (
     ItemCreateForm,
     PhotoUploadForm,
 )
+from django.db.models import OuterRef, Subquery
 
 User = get_user_model()
 
@@ -67,8 +68,16 @@ class ItemListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         user = self.request.user  # ログインしているユーザー情報を取得
 
-        return Item.objects.filter(
-            user=user, delete_flag=False
+        first_photo = (
+            ItemPhoto.objects.filter(item=OuterRef("pk"))
+            .order_by("id")
+            .values("url")[:1]
+        )
+
+        return (
+            Item.objects.filter(user=user, delete_flag=False)
+            .annotate(first_photo_url=Subquery(first_photo))
+            .order_by("-purchase_date", "-id")
         )  # ユーザーに紐づく、論理削除されていないアイテムを取得
 
 

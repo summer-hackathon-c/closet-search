@@ -6,20 +6,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Style Log{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
-    <header>
-        <h1>Style Log</h1>
-    </header>
+    <div class="wrapper">
+        <header class="header">
+            <div class="header-left">
+                <a href="{% url 'item-list'%}">
+                    <img src="{% static 'img/logo_white.png' %}" alt="ロゴ" class="header-logo">
+                </a>
+            </div>
+            <div class="header-right">
+                <a class="font-regular logout-link" href="{% url 'logout' %}">ログアウト</a>
+            </div>
+        </header>
 
-    <main>
-        {% block content %}{% endblock %}
-        {% block extra_js %}{% endblock %}
-    </main>
+        <main class="main">
+            {% block content %}{% endblock %}
+        </main>
 
-    <footer>
-        <p>&copy; 2025 Summer C team</p>
-    </footer>
+        <footer class="footer">
+            <p>&copy; 2025 Summer C team</p>
+        </footer>
+    </div>
+    {% block extra_js %}{% endblock %}
 </body>
 </html>

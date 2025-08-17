@@ -1,20 +1,229 @@
+:root { 
+    --card-h: 10rem;
+    --header-h: 3.5rem;      /* 上のグローバルヘッダーの高さ */
+    --subheader-h: 3rem;     /* アイテム見出しの高さ（item-header） */
+}
+
+html {
+    height: 100%;
+    margin: 0;
+}
+
 body {
-    font-family: Arial, sans-serif;
     background-color: #F0E4D3;
+    height: 100%;
+    margin: 0;
+    padding: 0 1rem;
 }
 
-header {
-    /* background-color: #333; */
-    color: white;
-    -webkit-text-stroke: 1px black;
-    padding: 10px 0;
-    text-align: left;
+.wrapper {
+    min-height: 100vh;         /* 画面高いっぱい */
+    display: flex;
+    flex-direction: column;
 }
 
-footer {
-    /* background-color: #333; */
+.header {
+    display: flex;           /* 左右を並べる */
+    align-items: center;     /* 縦中央揃え */
+    justify-content: space-between; /* 左右に分ける */
+    box-sizing: border-box;           /* 高さ=padding+border込みで固定 */
+    padding: 0 .75rem;
+    background-color: #F0E4D3;
+
+    position: fixed;   /* ← これでガチ固定 */
+    top: 0;
+    left: 0;
+    right: 0;
+    height: var(--header-h);
+    z-index: 1000;     /* 前面に出す */
+}
+
+.logout-link {
+    text-decoration: none;
+    color: #946C66;
+}
+
+/* .header-right { */
+    /* メニューを増やす場合 */
+    /* display: flex;
+    gap: 10px;
+    align-items: center; */
+/* } */
+
+.main {
+    flex: 1 1 auto;
+    min-height: 0;
+    /* 上の2本の固定ヘッダーぶんだけ下げる */
+    padding-top: calc(var(--header-h) + var(--subheader-h));
+}
+
+.footer {
     color: black;
     text-align: center;
-    padding: 5px 0;
+    padding: 1rem;
+    flex-shrink: 0;
 }
 
+.header-logo {
+    height: 2rem;
+    width: auto;
+}
+
+h1 {
+    font-family: "M PLUS Rounded 1c", sans-serif;
+    font-weight: 500;
+    font-style: normal;
+    font-size: 1.5rem;
+    margin-top: 0;
+}
+
+.item-page {
+    display: flex;
+    flex-direction: column;
+    margin-top: 1rem;
+    min-height: 0;
+}
+
+.item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #F0E4D3;
+    padding: 0.5rem 1rem;
+    position: fixed;
+    top: var(--header-h);      /* ヘッダーの直下に吸着 */
+    left: 0;
+    right: 0;
+    z-index: 10;
+    border-bottom: 1px solid #ccc;
+    height: var(--subheader-h);
+    z-index: 900;              /* header よりは低く、カードより高く */
+}
+
+.btn-add {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.4rem 0.8rem;
+    background-color: #D9A299;
+    border: none;
+    border-radius: 3rem;
+    color: #fff;
+    text-decoration: none;
+    width: 2.5rem;
+    height: 2rem;
+    text-align: center;
+}
+
+.btn-add:hover {
+    background-color: #BBA8A9;
+}
+
+.font-regular {
+    font-family: "M PLUS Rounded 1c", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.font-medium {
+    font-family: "M PLUS Rounded 1c", sans-serif;
+    font-weight: 500;
+    font-style: normal;
+}
+
+/* indexページ */
+.item-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.4rem;
+}
+
+.item-card {
+    display: grid;
+    grid-template-columns: 1fr 1fr;   /* 左右半分 */
+    gap: 0.75rem;
+    background: #F5F5F5;
+    border: 1px solid #e5e5e5;
+    border-radius: 0.1rem;
+    padding: 0.75rem;
+    box-shadow: 0 4px 4px rgba(0,0,0,0.2);
+    text-decoration: none;
+    color: inherit;
+
+    height: var(--card-h);      /* ← カードの高さを固定 */
+    overflow: hidden;
+}
+
+.item-card-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* 上 = メタ情報 / 下 = 削除 */
+    min-height: 8rem;
+}
+
+.meta {
+    display: grid;
+    gap: 0.5rem;
+    overflow: hidden;
+}
+
+.meta-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    min-height: 0;
+}
+
+.label {
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.value {
+    font-weight: 600;
+}
+
+/* 右カラム：写真 */
+.item-card-right {
+    position: relative;
+    min-width: 0;
+}
+
+.item-photo {
+    width: 100%;
+    height: var(--card-h);
+    object-fit: cover;     /* いい感じにトリミング */
+    border-radius: 0.1rem;
+}
+
+/* 削除ボタン */
+.delete-form {
+    margin-top: 0.75rem;
+}
+
+.btn-delete {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.75rem;
+    border: 1px solid #e2e2e2;
+    background: #fff;
+    border-radius: 0.5rem;
+    cursor: pointer;
+}
+
+.btn-delete:hover {
+    background: #fdecec;         /* 薄い赤系のホバー */
+    border-color: #f3caca;
+}
+
+.icon-trash {
+    width: auto;
+    height: 1.2rem;
+}
+
+span {
+    font-family: "M PLUS Rounded 1c", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+}
