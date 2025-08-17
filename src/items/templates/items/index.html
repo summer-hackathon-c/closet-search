@@ -1,31 +1,54 @@
 {% extends 'base.html' %}
+{% load static %}
+{% load yen %}
 
 {% block title %}登録アイテム一覧{% endblock %}
 
 {% block content %}
-<h2>登録アイテム一覧</h2>
-<a href="{% url 'item-create' %}" class="btn btn-primary">
-    追加
-</a>
-{% if items %}
-    {% for item in items %}
-        <li>
-            <a href="{% url 'item_detail' item.pk %}" class="stretched-link">{{ item.purchase_date }}</a>
-        </li>
-        <li>{{ item.price }}</li>
-        <li>{{ item.description }}</li>
-        {% if item.itemphoto_set.all %}
-            {% for p in item.itemphoto_set.all %}
-                <img src="{{ p.url }}" alt="写真"
-                    style="width:160px;height:120px;object-fit:cover;border-radius:6px;">
+<div class="item-page">
+    <div class="item-header">
+        <h1>登録アイテム一覧</h1>
+        <a href="{% url 'item-create' %}" class="btn-add font-regular">追加</a>
+    </div>
+    <div class="item-list">
+        {% if items %}
+            {% for item in items %}
+                <a href="{% url 'item-detail' item.pk %}" class="item-card">
+                    <div class="item-card-left">
+                        <div class="meta">
+                            <div class="meta-row">
+                                <span class="label">購入日 : </span>
+                                <span class="value">
+                                    {{ item.purchase_date|date:"Y/m/d" }}
+                                </span>
+                            </div>
+                            <div class="meta-row">
+                                <span class="label">価格 : </span>
+                                <span class="value">
+                                    {{ item.price|yen }}
+                                </span>
+                            </div>
+                        </div>
+                        <form class="delete-form" method="post" action="{% url 'item-delete' item.pk %}" onsubmit="return confirm('本当に削除しますか？');">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-delete">
+                                <img src="{% static 'img/delete_icon.png' %}" alt="削除" class="icon-trash">
+                            </button>
+                        </form>
+                    </div>
+                    <div class="item-card-right">
+                        {% if item.first_photo_url %}
+                            <img src="{{ item.first_photo_url }}" alt="アイテム写真" class="item-photo">
+                        {% else %}
+                            <span>写真が登録されていません</span>
+                            {% comment %} <img src="{% static 'img/placeholder.png' %}" alt="No image" class="item-photo"> {% endcomment %}
+                        {% endif %}
+                    </div>
+                </a>
             {% endfor %}
         {% else %}
-            <span>No Image</span>
+            <p>アイテムが登録されていません</p>
         {% endif %}
-    {% endfor %}
-{% else %}
-    <p>アイテムが登録されていません</p>
-{% endif %}
-<br>
-<a class="nav-link" href="{% url 'logout' %}">ログアウト</a>
+    </div>
+</div>
 {% endblock %}
