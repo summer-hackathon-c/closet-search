@@ -33,7 +33,7 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./etc/nginx/conf.d/django.conf:/etc/nginx/conf.d/django.conf:ro
+      - ./etc/nginx/conf.d:/etc/nginx/conf.d:ro
       - static_volume:/app/staticfiles:ro           # Nginx から見えるパス
       - media_volume:/app/media:ro                  # （必要なら）
 
