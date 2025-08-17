@@ -23,8 +23,10 @@ from django.conf.urls.static import static
 
 from django.http import HttpResponse
 
+
 def healthcheck(request):
     return HttpResponse("OK", status=200)
+
 
 urlpatterns = [
     path("healthz/", healthcheck),  # ターゲットグループのヘルスチェック対策
