@@ -1,27 +1,42 @@
 version: '3'
 
 services:
-  # サービス名
   django:
     build:
-      context: ./containers    # Dockerfileがあるディレクトリまでの相対パス
-      dockerfile: Dockerfile.prod   # Dockerfileのファイル名
-
-    # 作成するコンテナ名の指定
+      context: ./containers
+      dockerfile: Dockerfile.prod
     container_name: django
 
-    # 使用するポートの設定
-    ports:
-      - "8000:8000"
+    # 外部公開はNginx経由にするので削除
+    # ports:
+    #   - "8000:8000"
+    expose:
+      - "8000"  # Nginx から見える内部ポート
 
-    # 対話的なセッションやコマンドラインの操作を許可する
     tty: true
 
+    working_dir: /root/workspace
     volumes:
-      # ホストの Django プロジェクト（${SRC_PATH}）をコンテナ内の /root/workspace にマウント
-      # manage.py やアプリケーションコードにアクセスできるようにするために必須
       - ${SRC_PATH}:/root/workspace
-
-    # 環境変数ファイルの指定
+      - static_volume:/root/workspace/staticfiles   # ← STATIC_ROOT と同じ場所を共有
+      - media_volume:/root/workspace/media          # ←（ローカルMEDIAを暫定で配るなら）
     env_file:
       - .env
+    # 例：エントリポイントをここで指定しているなら
+    # command: bash entrypoint.prod.sh
+
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: nginx
+    depends_on:
+      - django
+    ports:
+      - "80:80"
+    volumes:
+      - ./etc/nginx/conf.d/django.conf:/etc/nginx/conf.d/django.conf:ro
+      - static_volume:/app/staticfiles:ro           # Nginx から見えるパス
+      - media_volume:/app/media:ro                  # （必要なら）
+
+volumes:
+  static_volume:
+  media_volume:
