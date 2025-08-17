@@ -96,9 +96,6 @@ AWS_STORAGE_BUCKET_NAME = os.getenv("AWS_STORAGE_BUCKET_NAME")
 AWS_S3_REGION_NAME = os.getenv("AWS_S3_REGION_NAME", "ap-northeast-1")
 AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
 
-# ACLを使わずに、バケットポリシー / IAM で制御する
-AWS_DEFAULT_ACL = None   
-
 if not DEBUG:
     # 本番はS3配信
     STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/static/"
