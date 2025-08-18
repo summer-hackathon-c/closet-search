@@ -1,6 +1,6 @@
 # ruff: noqa: F401, F403, F405
 import os
-from .base import * # noqa
+from .base import *  # noqa
 
 
 DEBUG = False
