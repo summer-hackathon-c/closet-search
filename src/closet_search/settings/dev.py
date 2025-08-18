@@ -1,5 +1,6 @@
 # src/closet_search/settings/dev.py
-from .base import os, BASE_DIR
+from .base import *  # noqa
+import os 
 
 DEBUG = True
 ALLOWED_HOSTS = ["*"]  # ローカル/コンテナからのアクセス許可
@@ -18,9 +19,9 @@ DATABASES = {
 
 # 静的/メディアはローカル配信
 STATIC_URL = "/static/"
-STATIC_ROOT = BASE_DIR / "staticfiles"
+STATIC_ROOT = BASE_DIR / "staticfiles" # noqa:F405 ← BASE_DIRはbase側定義のため行単位で抑止
 MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media/"
+MEDIA_ROOT = BASE_DIR / "media/" # noqa:F405
 
 # 便利のため（ALB等が無い前提）
 USE_X_FORWARDED_HOST = False
