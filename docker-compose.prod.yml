@@ -26,6 +26,6 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./etc/nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
 
 volumes: {}
