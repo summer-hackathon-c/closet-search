@@ -107,12 +107,36 @@ class ItemCreateForm(forms.ModelForm):
             "description": "説明",
         }
 
+        # 入力欄のカスタマイズ
+        widgets = {
+            "purchase_date": forms.DateInput(
+                attrs={
+                    "class": "form-control",  # CSSにて使用するクラス
+                    "placeholder": "2025-01-01",
+                }
+            ),
+            "price": forms.NumberInput(
+                attrs={
+                    "class": "form-control",  # CSSにて使用するクラス
+                    "placeholder": "2000",
+                    "min": "0",  # マイナスの価格入力がブラウザ上で禁止される
+                }
+            ),
+            "description": forms.Textarea(
+                attrs={
+                    "class": "form-control",  # CSSにて使用するクラス
+                    "rows": 4,  # 初期表示で4行文の高さに設定
+                    "placeholder": "例：〇〇(店名,場所）にて購入",
+                }
+            ),
+        }
+
 
 # 画像アップロード
 class PhotoUploadForm(forms.Form):
     # 複数枚アップロード
     images = forms.FileField(
-        label="画像ファイル（複数可）",
+        label="写真は５枚まで登録できます",
         widget=forms.ClearableFileInput(
             attrs={"multiple": True, "accept": "image/*", "id": "images-input"}
         ),
