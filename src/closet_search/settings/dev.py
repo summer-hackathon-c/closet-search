@@ -1,5 +1,5 @@
 # src/closet_search/settings/dev.py
-from .base import *
+from .base import os, BASE_DIR
 
 DEBUG = True
 ALLOWED_HOSTS = ["*"]  # ローカル/コンテナからのアクセス許可
