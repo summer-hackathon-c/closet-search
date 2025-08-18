@@ -1,24 +1,37 @@
 {% extends 'base.html' %}
+{% load static %}
+{% load yen %}
 
 {% block title %}アイテム詳細{% endblock %}
 
 {% block content %}
-    <h2>アイテム詳細</h2>
-    {% comment %}
-        一旦アイテムの表示を追加します。
-    {% endcomment %}
-    <li>{{ item.purchase_date}}</li>
-    <li>{{ item.price}}</li>
-    <li>{{ item.description}}</li>
-    {# photos は View 側 の設定による #}
-    {% if item.itemphoto_set.all %}
+<div class="item-page">
+    <div class="item-header">
+        <h1>アイテム詳細</h1>
+        <form class="delete-form" method="post" action="{% url 'item-delete' item.pk %}" onsubmit="return confirm('本当に削除しますか？');">
+            {% csrf_token %}
+            <button type="submit" class="btn-delete-beige">
+                <img src="{% static 'img/delete_icon.png' %}" alt="削除" class="icon-trash">
+            </button>
+        </form>
+    </div>
+    <ul class="item-detail-list font-regular">
+        <li>購入日：{{ item.purchase_date|date:"Y/m/d" }}</li>
+        <li>価格：{{ item.price|to_yen }}</li>
+        <li>説明・メモ：<br>{{ item.description|default_if_none:"" }}</li>
+    </ul>
+    <div class="photo-list">
         {% for p in item.itemphoto_set.all %}
-            <img src="{{ p.url }}" alt="写真"
-                style="width:160px;height:120px;object-fit:cover;border-radius:6px;">
+            <img src="{{ p.url }}" alt="写真">
+        {% empty %}
+            <span>写真が登録されていません</span>
         {% endfor %}
-    {% else %}
-        <span>No Image</span>
-    {% endif %}
-    <br>
-    <a href="{% url 'item-list' %}" class="btn btn-primary">戻る</a>
+    </div>
+    <div class="detail-btn-container">
+        <a href="{% url 'item-list' %}" class="detail-btn-action btn-edit font-regular">編集する</a>
+        {% comment %} TODO: 編集画面ができたら、L33-34は削除、L35を活性化してください {% endcomment %}
+        {% comment %} <a href="{% url 'item-edit' item.pk %}" class="detail-btn-action btn-edit">編集する</a> {% endcomment %}
+        <a href="{% url 'item-list' %}" class="detail-btn-action btn-back font-regular">戻る</a>
+    </div>
+</div>
 {% endblock %}
