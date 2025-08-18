@@ -1,3 +1,5 @@
+# ruff: noqa: F401, F403, F405
+
 # src/closet_search/settings/prod.py
 from .base import * # noqa
 import os
