@@ -1,8 +1,7 @@
 # ruff: noqa: F401, F403, F405
-
-# src/closet_search/settings/prod.py
-from .base import * # noqa
 import os
+from .base import * # noqa
+
 
 DEBUG = False
 ALLOWED_HOSTS = ["style-log.com", "www.style-log.com"]

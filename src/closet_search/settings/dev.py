@@ -1,13 +1,10 @@
 # ruff: noqa: F401, F403, F405
-
-# src/closet_search/settings/dev.py
-from .base import *  # noqa
-import os 
+import os
+from .base import *
 
 DEBUG = True
 ALLOWED_HOSTS = ["*"]  # ローカル/コンテナからのアクセス許可
 
-# DB（DockerのMySQLを使うなら環境変数で）
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
@@ -21,13 +18,10 @@ DATABASES = {
 
 # 静的/メディアはローカル配信
 STATIC_URL = "/static/"
-STATIC_ROOT = BASE_DIR / "staticfiles" # noqa:F405 ← BASE_DIRはbase側定義のため行単位で抑止
+STATIC_ROOT = BASE_DIR / "staticfiles"
 MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media/" # noqa:F405
+MEDIA_ROOT = BASE_DIR / "media/"
 
-# 便利のため（ALB等が無い前提）
 USE_X_FORWARDED_HOST = False
 SECURE_PROXY_SSL_HEADER = None
-
-# CSRF はローカルで必要なら追加
 # CSRF_TRUSTED_ORIGINS = ["http://localhost:8000"]
