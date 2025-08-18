@@ -1,4 +1,5 @@
 # src/closet_search/settings/prod.py
+from .base import * # noqa
 import os
 
 DEBUG = False
