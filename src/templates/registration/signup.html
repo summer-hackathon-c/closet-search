@@ -6,13 +6,13 @@
 
 {% block content %}
 <div class="">
-    <h2>アカウントを作成してください</h2>
+    <h2 class="font-regular">アカウントを作成してください</h2>
 
     <form method="post">
         {% csrf_token %}
         {% bootstrap_form form %}
         <div class="container mt-5">
-            <button type="submit" class="btn btn-primary my-btn">新規登録</button>
+            <button type="submit" class="btn btn-primary my-btn font-regular">新規登録</button>
         </div>
     </form>
 </div>
