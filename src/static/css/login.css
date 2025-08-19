@@ -2,6 +2,14 @@
     color: darkgray;
 }
 
+.to-login a {
+    color: rgb(123, 122, 122);
+}
+
+.to-login a:hover {
+    color: rgb(88, 88, 88);
+}
+
 .catch-copy {
     font-size: 1.2rem;
 }
