@@ -54,6 +54,17 @@ class UserLoginView(LoginView):
 
     def get_success_url(self):
         return reverse_lazy("item-list")
+    
+    
+# ログイン状態を判定してリダイレクトするビューを設定するクラス
+class RootRedirectView(View):
+    def get(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            # ログイン時は一覧ページへ
+            return redirect("item-list")
+        else:
+            # 未ログイン時はログインページへ
+            return redirect("login")
 
 
 # アイテム一覧表示
