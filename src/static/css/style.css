@@ -1,7 +1,7 @@
 :root { 
     --card-h: 10rem;
     --header-h: 3.5rem;      /* 上のグローバルヘッダーの高さ */
-    --subheader-h: 3rem;     /* アイテム見出しの高さ（item-header） */
+    --subheader-h: 4.5rem;     /* アイテム見出しの高さ（item-header） */
 }
 
 html {
@@ -98,6 +98,23 @@ h1 {
     border-bottom: 1px solid #ccc;
     height: var(--subheader-h);
     z-index: 900;              /* header よりは低く、カードより高く */
+}
+
+.item-border-left {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* 左寄せ */
+}
+
+.item-border-left h1 {
+    margin: 0; /* h1 の余白を消す */
+}
+
+.item-count {
+    font-size: 1.1rem;
+    color: #946C66;
+    margin-top: 0.4rem;
+    margin-bottom: 0.4rem;
 }
 
 .btn-add {
