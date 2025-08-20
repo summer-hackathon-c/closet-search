@@ -6,7 +6,7 @@ from .views import (
     ItemCreateView,
     ItemListView,
     ItemDetailView,
-    ItemDeleteView, 
+    ItemDeleteView,
 )
 from django.contrib.auth.views import LogoutView
 

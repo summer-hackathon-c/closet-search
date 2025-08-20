@@ -54,8 +54,8 @@ class UserLoginView(LoginView):
 
     def get_success_url(self):
         return reverse_lazy("item-list")
-    
-    
+
+
 # ログイン状態を判定してリダイレクトするビューを設定するクラス
 class RootRedirectView(View):
     def get(self, request, *args, **kwargs):
