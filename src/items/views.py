@@ -43,6 +43,13 @@ class SignUpView(CreateView):
     form_class = CustomUserCreationForm
     template_name = "registration/signup.html"
     success_url = reverse_lazy("item-list")
+    
+    def form_valid(self, form):
+        # CreateViewのform_validで保存したインスタンスがself.objectに入る
+        response = super().form_valid(form)
+        login(self.request, self.object)  # ← ここで自動ログイン
+        return response
+        
 
 
 # ユーザーログイン
