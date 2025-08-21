@@ -5,7 +5,13 @@ from django.contrib.auth.mixins import LoginRequiredMixin  # 上位に記載必�
 from django.contrib.auth.views import LoginView
 from django.contrib.auth import login, get_user_model
 from django.views import View
-from django.views.generic import CreateView, ListView, DetailView, DeleteView
+from django.views.generic import (
+    CreateView,
+    ListView,
+    DetailView,
+    DeleteView,
+    UpdateView,
+)
 from django.urls import reverse_lazy
 from django.utils.timezone import now
 from django.shortcuts import render, redirect
@@ -22,7 +28,10 @@ from .forms import (
     LoginForm,
     ItemCreateForm,
     PhotoUploadForm,
+    ItemUpdateForm,
 )
+
+# from django.forms.models import model_to_dict
 from django.db.models import OuterRef, Subquery
 
 User = get_user_model()
@@ -129,6 +138,7 @@ class ItemCreateView(LoginRequiredMixin, View):
 
         # (TODO)seasonは暫定で以下のように設定
         item.season = 0
+        item.delete_flag = False
         item.save()
 
         # M2M があればここで
@@ -186,3 +196,90 @@ class ItemDeleteView(LoginRequiredMixin, DeleteView):
 
         # Trueへ変更後、success_urlへリダイレクトする
         return HttpResponseRedirect(self.get_success_url())
+
+
+# アイテム編集
+class ItemUpdateView(LoginRequiredMixin, UpdateView):
+    model = Item
+    template_name = "items/edit.html"
+    form_class = ItemUpdateForm
+    context_object_name = "item"
+
+    # テンプレートへ渡す追加データを定義
+    # Itemモデルへ写真フィールドがなく、かつUI上で画像アップロード欄のみを分離表示しわかりやすくするため。
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["photo_form"] = self.get_form()
+        context["photos"] = (
+            self.object.itemphoto_set.all()
+        )  # ItemPhotoモデルを参照し情報を取得
+        return context
+
+    # ログインしているユーザーに紐づく削除されていないアイテムを抽出
+    def get_queryset(self):
+        user = self.request.user
+
+        return Item.objects.filter(user=user, delete_flag=False)
+
+    # ユーザーがフォームを送信後、バリデーション通過後に行う保存や画面遷移処理のカスタマイズ
+    def form_valid(self, form):
+        # フォームから送られてきたデータをもとにitemオブジェクトを作成
+        # 内容を加工後保存するため、一時保存。
+        item = form.save(commit=False)
+
+        # description欄に記載がなければ、空文字にして表示。（Noneの表示を防ぐ）
+        if item.description is None:
+            item.description = ""
+
+        # 加工後の内容を保存
+        item.save()
+
+        # フォームにてimagesという名前で送信された複数"ファイル"をフォームから受け取る処理
+        images = self.request.FILES.getlist("images")
+
+        # フォーム送信時に複数の削除対象IDを取得するための処理
+        delete_ids = self.request.POST.getlist("delete_photos")
+
+        # 対象アイテムのItemPhotoモデルへ紐づくすべての写真の枚数を数える（削除対象写真は除く)
+        remaining_count = item.itemphoto_set.exclude(id__in=delete_ids).count()
+        # 新しく登録された画像ファイルの要素数
+        new_count = len(images)
+        # 画像の総枚数を計算
+        total_count = remaining_count + new_count
+
+        # 写真は1枚以下だと、バリデーション失敗として編集画面へ戻る(HTMLにてエラーを表示させる設定を行う)
+        if total_count < 1:
+            form.add_error("images", "写真は最低１枚登録してください")
+            return self.form_invalid(form)
+
+        # 写真は５枚以上だと、バリデーション失敗として編集画面へ戻る(HTMLにてエラーを表示させる設定を行う)
+        if total_count > 5:
+            form.add_error("images", "写真は最大５枚まで登録できます")
+            return self.form_invalid(form)
+
+        # 削除対象IDを一括削除
+        if delete_ids:
+            ItemPhoto.objects.filter(id__in=delete_ids, item=item).delete()
+
+        # ユーザーがアップロードした画像をサーバーに保存し、公開URLを取得
+        for img in images:
+            # 画像の拡張子を取得し、空欄だった場合は.jpgを使用
+            ext = os.path.splitext(img.name)[1] or ".jpg"
+
+            # ユニークの名前をファイル名へ定義
+            filename = f"items/{uuid.uuid4()}{ext}"
+
+            # 「img」というファイルを読み込んで、保存できる形に変え、指定した名前で保存する
+            saved_path = default_storage.save(filename, ContentFile(img.read()))
+
+            # 保存したファイルの「アクセスできるURL」を作って、public_url に入れる
+            public_url = default_storage.url(saved_path)
+
+            # ItemPhotoモデルへ、itemへ紐づく画像のURLを登録する
+            ItemPhoto.objects.create(item=item, url=public_url)
+
+        # アイテムの情報をデータベースの最新状態へ上書きする
+        item.refresh_from_db()
+
+        # 詳細画面へリダイレクト
+        return redirect("item-detail", pk=item.pk)

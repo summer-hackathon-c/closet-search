@@ -28,9 +28,7 @@
         {% endfor %}
     </div>
     <div class="detail-btn-container">
-        <a href="{% url 'item-list' %}" class="detail-btn-action btn-edit font-regular">編集する</a>
-        {% comment %} TODO: 編集画面ができたら、L33-34は削除、L35を活性化してください {% endcomment %}
-        {% comment %} <a href="{% url 'item-edit' item.pk %}" class="detail-btn-action btn-edit">編集する</a> {% endcomment %}
+        <a href="{% url 'item-edit' item.pk %}" class="detail-btn-action btn-edit">編集する</a>
         <a href="{% url 'item-list' %}" class="detail-btn-action btn-back font-regular">戻る</a>
     </div>
 </div>
