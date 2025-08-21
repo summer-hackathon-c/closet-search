@@ -7,6 +7,7 @@ from .views import (
     ItemListView,
     ItemDetailView,
     ItemDeleteView,
+    ItemUpdateView,
 )
 from django.contrib.auth.views import LogoutView
 
@@ -19,4 +20,5 @@ urlpatterns = [
     path("items/", ItemListView.as_view(), name="item-list"),
     path("items/<int:pk>", ItemDetailView.as_view(), name="item-detail"),
     path("items/<int:pk>/delete/", ItemDeleteView.as_view(), name="item-delete"),
+    path("items/<int:pk>/update/", ItemUpdateView.as_view(), name="item-update"),
 ]

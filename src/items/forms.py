@@ -142,3 +142,58 @@ class PhotoUploadForm(forms.Form):
         ),
         required=False,
     )
+
+
+# アイテム編集フォーム
+class ItemUpdateForm(forms.ModelForm):
+    # 画像をアップロードするためのフォーム（Itemモデルにフィールドなくても問題なし）
+    images = forms.FileField(
+        widget=forms.ClearableFileInput(
+            attrs={
+                "multiple": True,  # 複数画像選択可能
+                "accept": "image/*",  # 画像ファイルのみ選択可能
+                "id": "images-input",  # HTMLのiD属性
+            }
+        ),
+        required=False,  # view側にて設定
+    )
+
+    # 編集対象のアイテムのdescriptionが空欄であれば、空文字にする。
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.description is None:
+            self.fields["description"].initial = ""
+
+        # Itemモデルの中に写真フィールドがないため、以下定義が必要
+        self.fields["images"].label = "写真は5枚まで登録できます"
+
+    # itemモデルの中から、指定フィールドを選択しラベルを表示
+    class Meta:
+        model = Item
+        fields = ["purchase_date", "price", "description", "images"]
+        labels = {"purchase_date": "購入日", "price": "価格", "description": "説明"}
+
+        # 入力欄のカスタマイズ
+        #  Updateのため、placeholderは非表示
+        widgets = {
+            "purchase_date": forms.DateInput(
+                attrs={
+                    "class": "form-control",  # CSSにて使用するクラス
+                    # "placeholder": "2025-01-01",
+                }
+            ),
+            "price": forms.NumberInput(
+                attrs={
+                    "class": "form-control",  # CSSにて使用するクラス
+                    # "placeholder": "2000",
+                    "min": "0",  # マイナスの価格入力がブラウザ上で禁止される
+                }
+            ),
+            "description": forms.Textarea(
+                attrs={
+                    "class": "form-control",  # CSSにて使用するクラス
+                    "rows": 4,  # 初期表示で4行文の高さに設定
+                    # "placeholder": "例：二子玉川で購入。かわいい！！",
+                }
+            ),
+        }
