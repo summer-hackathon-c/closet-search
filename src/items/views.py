@@ -141,11 +141,31 @@ class ItemCreateView(LoginRequiredMixin, View):
         item.delete_flag = False
         item.save()
 
+        # フォームにてimagesという名前で送信された複数"ファイル"をフォームから受け取る処理
+        images = self.request.FILES.getlist("images")
+
+        # 登録された画像ファイルの要素数
+        count = len(images)
+
+        # 写真は1枚以下だと、バリデーション失敗として編集画面へ戻る(HTMLにてエラーを表示させる設定を行う)
+        if count < 1:
+            photo_form.add_error("images", "写真は最低１枚登録してください")
+            return render(
+                request, self.template_name, {"form": form, "photo_form": photo_form}
+            )
+
+        # 写真は５枚以上だと、バリデーション失敗として編集画面へ戻る(HTMLにてエラーを表示させる設定を行う)
+        if count > 5:
+            photo_form.add_error("images", "写真は最大５枚まで登録できます")
+            return render(
+                request, self.template_name, {"form": form, "photo_form": photo_form}
+            )
+
         # M2M があればここで
         form.save_m2m()
 
         # 複数画像保存 → URL 取得
-        for img in request.FILES.getlist("images"):
+        for img in images:
             # 拡張子を推定（なければ jpg など固定でもOK）
 
             ext = os.path.splitext(img.name)[1] or ".jpg"
