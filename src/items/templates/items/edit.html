@@ -1,15 +1,62 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}アイテム編集{% endblock %}
 
 {% block content %}
-    <h2>アイテム編集</h2>
-    {% comment %}
-        一旦フォームの表示を追加します。
-    {% endcomment %}
-    <form method="post">
+    <h1>アイテム編集</h1>
+
+    {% if messages %}
+        <ul>
+            {% for message in messages %}
+                <li style="color:red">{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">更新する</button>
+        
+        {# フォーム全体のエラーの表示 #}
+        {{ form.non_field_errors }}
+
+        {# 各フィールドを個別に表示 #}
+        <div class="form-group">
+        {{ form.purchase_date.label}} {{ form.purchase_date }}
+        </div>
+        <div class="form-group">
+        {{ form.price.label }} {{ form.price }}
+        </div>
+        <div class="form-group">
+        {{ form.description.label }} {{ form.description }}
+        </div>
+
+        <div>
+            {{ photo_form.images.label }} {{ photo_form.images }}
+            {% for e in photo_form.images.errors %}
+                <div style="color:red">{{ e }}</div>
+            {% endfor %}
+        </div>
+
+        {# 画像削除#}
+         {% for photo in photos %}
+        <div class="photo-block">
+            <img src="{{ photo.url }}" alt="登録済み画像" width="150" height="150">
+
+            <label>
+            <input type="checkbox" name="delete_photos" value="{{ photo.id }}">
+            削除
+            </label>
+        </div>
+        {% endfor %} 
+
+        <div id="preview" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;"></div>
+
+        <button type="submit">登録する</button>
     </form>
+    <a href="{% url 'item-list' %}" class="btn btn-primary">戻る</a>
+
+    {% block extra_js %}
+        <script src="{% static 'js/preview.js' %}"></script>
+    {% endblock %}    
 {% endblock %}

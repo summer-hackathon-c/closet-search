@@ -36,15 +36,33 @@ h2 {
 
 .my-btn {
     background-color: #D9A299;
-    border-color: #946C66;
-
-    /* background-color: #BBA8A9; */
-    /* border-color: #BBA8A9; */
+    border-color: #D9A299;
     border-radius: 3rem; /* 50px → 3.125rem */
     width: 10rem;
+}
+
+.my-btn:hover {
+    background-color: #D9A299  !important;
+    color: #946C66  !important;
+    border-color: #D9A299 !important;
+    cursor: pointer;
+}
+
+.my-btn:active,
+.my-btn:focus {
+    background-color: #8B5A50;
+    transform: scale(0.98);
+    outline: none !important;
+    box-shadow: none !important;
 }
 
 p {
     font-size: 1rem;
     margin-top: 3rem;
+}
+
+.font-regular {
+    font-family: "M PLUS Rounded 1c", sans-serif;
+    font-weight: 400;
+    font-style: normal;
 }

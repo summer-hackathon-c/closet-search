@@ -4,7 +4,7 @@ register = template.Library()
 
 
 @register.filter
-def yen(value):
+def to_yen(value):
     try:
         return f"{int(value):,}円"
     except (TypeError, ValueError):

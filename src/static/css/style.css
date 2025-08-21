@@ -1,7 +1,7 @@
 :root { 
     --card-h: 10rem;
     --header-h: 3.5rem;      /* 上のグローバルヘッダーの高さ */
-    --subheader-h: 3rem;     /* アイテム見出しの高さ（item-header） */
+    --subheader-h: 4.5rem;     /* アイテム見出しの高さ（item-header） */
 }
 
 html {
@@ -84,7 +84,7 @@ h1 {
     min-height: 0;
 }
 
-.item-header {
+.item-border-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -98,6 +98,23 @@ h1 {
     border-bottom: 1px solid #ccc;
     height: var(--subheader-h);
     z-index: 900;              /* header よりは低く、カードより高く */
+}
+
+.item-border-left {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* 左寄せ */
+}
+
+.item-border-left h1 {
+    margin: 0; /* h1 の余白を消す */
+}
+
+.item-count {
+    font-size: 1.1rem;
+    color: #946C66;
+    margin-top: 0.4rem;
+    margin-bottom: 0.4rem;
 }
 
 .btn-add {
@@ -117,18 +134,6 @@ h1 {
 
 .btn-add:hover {
     background-color: #BBA8A9;
-}
-
-.font-regular {
-    font-family: "M PLUS Rounded 1c", sans-serif;
-    font-weight: 400;
-    font-style: normal;
-}
-
-.font-medium {
-    font-family: "M PLUS Rounded 1c", sans-serif;
-    font-weight: 500;
-    font-style: normal;
 }
 
 /* indexページ */
@@ -225,5 +230,128 @@ h1 {
 span {
     font-family: "M PLUS Rounded 1c", sans-serif;
     font-weight: 400;
+    font-style: normal;
+}
+
+/* createページ */
+.item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #F0E4D3;
+    padding: 0.5rem 1rem;
+    position: fixed;
+    top: var(--header-h);      /* ヘッダーの直下に吸着 */
+    left: 0;
+    right: 0;
+    z-index: 10;
+    height: var(--subheader-h);
+    z-index: 900;              /* header よりは低く、カードより高く */
+}
+
+.btn-submit {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.4rem 0.8rem;
+    background-color: #D9A299;
+    border: none;
+    border-radius: 3rem;
+    color: #fff;
+    text-decoration: none;
+    width: 2.5rem;
+    height: 2rem;
+    text-align: center;
+}
+
+.btn-submit:hover {
+    background-color: #BBA8A9;
+}
+
+.item-detail-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.item-detail-list li {
+    margin-bottom: 0.8rem;
+}
+
+.photo-list {
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+    padding: 0.5rem 0;
+    -webkit-overflow-scrolling: touch; /* スマホでのスクロールを滑らかに */
+}
+
+.photo-list img {
+    width: 160px;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 0.1rem;
+    flex-shrink: 0;  /* 縮小せず一定サイズを保つ */
+}
+
+.btn-delete-beige {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.75rem;
+    border: 1px solid #e2e2e2;
+    background: #F0E9DF;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    margin-bottom: 1.8rem;
+}
+
+.detail-btn-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 8rem;
+}
+
+.detail-btn-action {
+    padding: 0.6rem 1.5rem;
+    background-color: #D9A299;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 3rem;
+    font-weight: bold;
+    transition: background-color 0.2s ease;
+    width: 6rem;
+    text-align: center;
+}
+
+.btn-edit {
+    background-color: #D9A299;
+    color: #fff;
+}
+.btn-edit:hover {
+    background-color: #b67f75;
+}
+
+.btn-back {
+    background-color: #F5F5F5;
+    color: #946C66;
+    border: 1px solid #946C66;
+}
+.btn-back:hover {
+    background-color: #f7f7f7;
+}
+
+.font-regular {
+    font-family: "M PLUS Rounded 1c", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.font-medium {
+    font-family: "M PLUS Rounded 1c", sans-serif;
+    font-weight: 500;
     font-style: normal;
 }
