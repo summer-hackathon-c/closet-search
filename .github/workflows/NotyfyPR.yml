@@ -5,9 +5,9 @@ on:
   pull_request:
     types: [opened] # プルリクエストが「新しく作成された時」に限定
     branches:
-      branches:
+      branches:  # 対象ブランチが develop及びrelease/mvp-20250823の場合のみ通知を送る
         - develop
-        - release/mvp-20250823 # 対象ブランチが develop及びrelease/mvp-20250823の場合のみ通知を送る
+        - release/mvp-20250823 
 
 jobs:
   notify:
