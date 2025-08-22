@@ -139,7 +139,6 @@ class ItemCreateView(LoginRequiredMixin, View):
         # (TODO)seasonは暫定で以下のように設定
         item.season = 0
         item.delete_flag = False
-        item.save()
 
         # フォームにてimagesという名前で送信された複数"ファイル"をフォームから受け取る処理
         images = self.request.FILES.getlist("images")
@@ -162,6 +161,7 @@ class ItemCreateView(LoginRequiredMixin, View):
             )
 
         # M2M があればここで
+        item.save()
         form.save_m2m()
 
         # 複数画像保存 → URL 取得
