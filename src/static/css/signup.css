@@ -1,0 +1,17 @@
+.to-signup {
+    color: darkgray;
+}
+
+.to-signup a {
+    color: rgb(123, 122, 122);
+}
+
+.to-signup a:hover {
+    color: rgb(88, 88, 88);
+}
+
+.font-regular {
+  font-family: "M PLUS Rounded 1c", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
