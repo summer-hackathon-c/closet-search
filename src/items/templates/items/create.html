@@ -5,47 +5,46 @@
 {% block title %}アイテム新規登録{% endblock %}
 
 {% block extra_css %}
-  {% bootstrap_css %}
-  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{% static 'css/item_form.css' %}">
+    {% bootstrap_css %}
+    <link rel="stylesheet" href="{% static 'css/item_form.css' %}">
 {% endblock %}
 
 {% block extra_js %}
-  <script src="{% static 'js/preview.js' %}"></script>
+    <script src="{% static 'js/preview.js' %}"></script>
 {% endblock %}
 
 {% block content %}
 <div class="item-page items-form-page">
-  <div class="item-header">
-    <h1>アイテム新規登録</h1>
-  　</div>
-
-  <div class="form-narrow">
-    {% if form.non_field_errors %}
-      <div class="alert alert-danger">{{ form.non_field_errors }}</div>
-    {% endif %}
-
-    <form method="post" enctype="multipart/form-data">
-      {% csrf_token %}
-
-      {# メインフォーム（各フィールドのエラーは自動表示） #}
-      {% bootstrap_form form %}
-
-      {# 画像アップロード #}
-      <div id="form-errors" class="alert alert-danger d-none"></div>
-      {% bootstrap_form_errors photo_form type='non_fields' %}
-      {% bootstrap_field photo_form.images show_label=True form_group_class="mb-3" %}
-
-      <div id="preview" class="mt-2"></div>
-
-      <div class="action-stack">
-        <button type="submit" class="btn-create">登録する</button>
-      </div>
-    </form>
-
-    <div class="action-stack">
-      <a href="{% url 'item-list' %}" class="btn-back">戻る</a>
+    <div class="item-header">
+        <h1>アイテム新規登録</h1>
     </div>
-  </div>
+
+    <div class="form-narrow">
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+        {% endif %}
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            {# メインフォーム（各フィールドのエラーは自動表示） #}
+            {% bootstrap_form form %}
+
+            {# 画像アップロード #}
+            <div id="form-errors" class="alert alert-danger d-none"></div>
+            {% bootstrap_form_errors photo_form type='non_fields' %}
+            {% bootstrap_field photo_form.images show_label=True form_group_class="mb-3" %}
+
+            <div id="preview" class="mt-2"></div>
+
+            <div class="action-stack">
+                <button type="submit" class="btn-create">登録する</button>
+            </div>
+        </form>
+
+        <div class="action-stack">
+          <a href="{% url 'item-list' %}" class="btn-back">戻る</a>
+        </div>
+    </div>
 </div>
 {% endblock %}
