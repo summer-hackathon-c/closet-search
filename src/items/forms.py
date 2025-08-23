@@ -104,7 +104,7 @@ class ItemCreateForm(forms.ModelForm):
         labels = {
             "purchase_date": "購入日",
             "price": "価格",
-            "description": "説明",
+            "description": "説明・メモ",
         }
 
         # 入力欄のカスタマイズ
@@ -112,7 +112,7 @@ class ItemCreateForm(forms.ModelForm):
             "purchase_date": forms.DateInput(
                 attrs={
                     "class": "form-control",  # CSSにて使用するクラス
-                    "placeholder": "2025-01-01",
+                    "type": "date",  # カレンダー形式の選択
                 }
             ),
             "price": forms.NumberInput(
@@ -171,7 +171,11 @@ class ItemUpdateForm(forms.ModelForm):
     class Meta:
         model = Item
         fields = ["purchase_date", "price", "description", "images"]
-        labels = {"purchase_date": "購入日", "price": "価格", "description": "説明"}
+        labels = {
+            "purchase_date": "購入日",
+            "price": "価格",
+            "description": "説明・メモ",
+        }
 
         # 入力欄のカスタマイズ
         #  Updateのため、placeholderは非表示
