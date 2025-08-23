@@ -26,7 +26,6 @@ from .forms import (
     CustomUserCreationForm,
     LoginForm,
     ItemCreateForm,
-    PhotoUploadForm,
     ItemUpdateForm,
 )
 
@@ -110,36 +109,28 @@ class ItemCreateView(LoginRequiredMixin, View):
             self.template_name,
             {
                 "form": ItemCreateForm(),  # アイテム登録フォーム
-                "photo_form": PhotoUploadForm(),  # 画像アップロードフォーム
             },
         )
 
     # POSTリクエスト（登録処理）
     def post(self, request, *args, **kwargs):
         # 送信データをフォームにバインド
-        form = ItemCreateForm(request.POST)
-        photo_form = PhotoUploadForm(request.POST, request.FILES)
+        form = ItemCreateForm(request.POST, request.FILES)
 
-        # まず両方バリデーション
-        item_valid = form.is_valid()
-        photo_valid = photo_form.is_valid()
-
-        # 画像枚数の独自ルールをここで追加検証
-        # フォームにてimagesという名前で送信された複数"ファイル"をフォームから受け取る処理
+        # imagesの枚数チェック
         images = request.FILES.getlist("images")
+        item_valid = form.is_valid()
         if len(images) < 1:
-            photo_form.add_error("images", "写真は最低１枚登録してください")
-            photo_valid = False
+            form.add_error("images", "写真は最低１枚登録してください")
         elif len(images) > 5:
-            photo_form.add_error("images", "写真は最大５枚まで登録できます")
-            photo_valid = False
+            form.add_error("images", "写真は最大５枚まで登録できます")
 
-        # どちらかNGなら、両方のエラーを持ったまま再描画
-        if not (item_valid and photo_valid):
+        # formにエラーが一つでもあれば再描画
+        if not item_valid or form.errors:
             return render(
                 request,
                 self.template_name,
-                {"form": form, "photo_form": photo_form},
+                {"form": form},
             )
 
         # ここから保存処理
@@ -222,6 +213,12 @@ class ItemUpdateView(LoginRequiredMixin, UpdateView):
 
         return Item.objects.filter(user=user, delete_flag=False)
 
+    # requestをフォームに渡す
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["request"] = self.request  # clean()がdelete_photosを参照できるように
+        return kwargs
+
     # ユーザーがフォームを送信後、バリデーション通過後に行う保存や画面遷移処理のカスタマイズ
     def form_valid(self, form):
         # フォームから送られてきたデータをもとにitemオブジェクトを作成
@@ -235,35 +232,13 @@ class ItemUpdateView(LoginRequiredMixin, UpdateView):
         # 加工後の内容を保存
         item.save()
 
-        # フォームにてimagesという名前で送信された複数"ファイル"をフォームから受け取る処理
-        images = self.request.FILES.getlist("images")
-
-        # フォーム送信時に複数の削除対象IDを取得するための処理
+        # 既存の削除
         delete_ids = self.request.POST.getlist("delete_photos")
-
-        # 対象アイテムのItemPhotoモデルへ紐づくすべての写真の枚数を数える（削除対象写真は除く)
-        remaining_count = item.itemphoto_set.exclude(id__in=delete_ids).count()
-        # 新しく登録された画像ファイルの要素数
-        new_count = len(images)
-        # 画像の総枚数を計算
-        total_count = remaining_count + new_count
-
-        # 写真は1枚以下だと、バリデーション失敗として編集画面へ戻る(HTMLにてエラーを表示させる設定を行う)
-        if total_count < 1:
-            form.add_error("images", "写真は最低１枚登録してください")
-            return self.form_invalid(form)
-
-        # 写真は５枚以上だと、バリデーション失敗として編集画面へ戻る(HTMLにてエラーを表示させる設定を行う)
-        if total_count > 5:
-            form.add_error("images", "写真は最大５枚まで登録できます")
-            return self.form_invalid(form)
-
-        # 削除対象IDを一括削除
         if delete_ids:
             ItemPhoto.objects.filter(id__in=delete_ids, item=item).delete()
 
-        # ユーザーがアップロードした画像をサーバーに保存し、公開URLを取得
-        for img in images:
+        # 新規の保存
+        for img in self.request.FILES.getlist("images"):
             # 画像の拡張子を取得し、空欄だった場合は.jpgを使用
             ext = os.path.splitext(img.name)[1] or ".jpg"
 
@@ -278,9 +253,6 @@ class ItemUpdateView(LoginRequiredMixin, UpdateView):
 
             # ItemPhotoモデルへ、itemへ紐づく画像のURLを登録する
             ItemPhoto.objects.create(item=item, url=public_url)
-
-        # アイテムの情報をデータベースの最新状態へ上書きする
-        item.refresh_from_db()
 
         # 詳細画面へリダイレクト
         return redirect("item-detail", pk=item.pk)

@@ -1,5 +1,5 @@
 from django import forms
-from .models import User, Item
+from .models import User, Item, ItemPhoto
 from django.contrib.auth import authenticate
 from django.forms import ValidationError
 
@@ -98,6 +98,20 @@ class LoginForm(forms.Form):
 
 # アイテム新規登録
 class ItemCreateForm(forms.ModelForm):
+    # createでも同じUIを使えるように追加
+    # 画像をアップロードするためのフォーム（Itemモデルにフィールドなくても問題なし）
+    images = forms.FileField(
+        label="写真は5枚まで登録できます",
+        widget=forms.ClearableFileInput(
+            attrs={
+                "multiple": True,  # 複数画像選択可能
+                "accept": "image/*",  # 画像ファイルのみ選択可能
+                "id": "images-input",  # HTMLのiD属性
+            }
+        ),
+        required=False,  # view側にて設定
+    )
+
     class Meta:
         model = Item
         fields = ["purchase_date", "price", "description"]
@@ -132,18 +146,6 @@ class ItemCreateForm(forms.ModelForm):
         }
 
 
-# 画像アップロード
-class PhotoUploadForm(forms.Form):
-    # 複数枚アップロード
-    images = forms.FileField(
-        label="写真は５枚まで登録できます",
-        widget=forms.ClearableFileInput(
-            attrs={"multiple": True, "accept": "image/*", "id": "images-input"}
-        ),
-        required=False,
-    )
-
-
 # アイテム編集フォーム
 class ItemUpdateForm(forms.ModelForm):
     # 画像をアップロードするためのフォーム（Itemモデルにフィールドなくても問題なし）
@@ -160,6 +162,8 @@ class ItemUpdateForm(forms.ModelForm):
 
     # 編集対象のアイテムのdescriptionが空欄であれば、空文字にする。
     def __init__(self, *args, **kwargs):
+        # UpdateViewから渡すrequestを保持
+        self.request = kwargs.pop("request", None)
         super().__init__(*args, **kwargs)
         if self.instance and self.instance.description is None:
             self.fields["description"].initial = ""
@@ -178,7 +182,7 @@ class ItemUpdateForm(forms.ModelForm):
         }
 
         # 入力欄のカスタマイズ
-        #  Updateのため、placeholderは非表示
+        #  Updateのため、未入力が有り得るdescriptionのみplaceholder表示
         widgets = {
             "purchase_date": forms.DateInput(
                 attrs={
@@ -197,7 +201,39 @@ class ItemUpdateForm(forms.ModelForm):
                 attrs={
                     "class": "form-control",  # CSSにて使用するクラス
                     "rows": 4,  # 初期表示で4行文の高さに設定
-                    # "placeholder": "例：二子玉川で購入。かわいい！！",
+                    "placeholder": "例：二子玉川で購入。かわいい！！",
                 }
             ),
         }
+
+    def clean(self):
+        cleaned = super().clean()
+
+        # 新規アップロード枚数
+        files = []
+        if hasattr(self, "files") and self.files:
+            files = self.files.getlist("images")
+        new_count = len(files)
+
+        # 削除予定（×を押した既存画像）
+        delete_ids = []
+        if self.request and self.request.method == "POST":
+            delete_ids = self.request.POST.getlist("delete_photos")
+
+        # 既存の残る枚数（= 既存 - 削除）
+        remaining = 0
+        if self.instance and self.instance.pk:
+            remaining = (
+                ItemPhoto.objects.filter(item=self.instance)
+                .exclude(id__in=delete_ids)
+                .count()
+            )
+
+        total = remaining + new_count
+
+        if total < 1:
+            self.add_error("images", "写真は最低１枚登録してください")
+        elif total > 5:
+            self.add_error("images", "写真は最大５枚まで登録できます")
+
+        return cleaned
