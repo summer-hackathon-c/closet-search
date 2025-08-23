@@ -211,7 +211,6 @@ class ItemUpdateView(LoginRequiredMixin, UpdateView):
     # Itemモデルへ写真フィールドがなく、かつUI上で画像アップロード欄のみを分離表示しわかりやすくするため。
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["photo_form"] = self.get_form()
         context["photos"] = (
             self.object.itemphoto_set.all()
         )  # ItemPhotoモデルを参照し情報を取得
