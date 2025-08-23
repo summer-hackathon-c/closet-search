@@ -160,9 +160,8 @@ class ItemCreateView(LoginRequiredMixin, View):
                 request, self.template_name, {"form": form, "photo_form": photo_form}
             )
 
-        # M2M があればここで
+        # アイテムの更新情報を保存
         item.save()
-        form.save_m2m()
 
         # 複数画像保存 → URL 取得
         for img in images:
