@@ -151,6 +151,8 @@ class ItemCreateView(LoginRequiredMixin, View):
         item.save()
         # form.save_m2m()  # M2M があればここで
 
+
+        # 複数画像保存 → URL 取得
         for img in images:
             # 拡張子を推定（なければ jpg など固定でもOK）
             ext = os.path.splitext(img.name)[1] or ".jpg"
