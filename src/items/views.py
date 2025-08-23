@@ -1,6 +1,5 @@
 import os
 import uuid
-from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin  # 上位に記載必要
 from django.contrib.auth.views import LoginView
 from django.contrib.auth import login, get_user_model
@@ -121,62 +120,46 @@ class ItemCreateView(LoginRequiredMixin, View):
         form = ItemCreateForm(request.POST)
         photo_form = PhotoUploadForm(request.POST, request.FILES)
 
-        # フォームが無効な場合はエラーを表示して再描画
-        if not form.is_valid() or not photo_form.is_valid():
-            messages.error(
-                request,
-                f"ItemCreateForm: {form.errors} / PhotoForm: {photo_form.errors}",
-            )
+        # まず両方バリデーション
+        item_valid = form.is_valid()
+        photo_valid = photo_form.is_valid()
+
+        # 画像枚数の独自ルールをここで追加検証
+        # フォームにてimagesという名前で送信された複数"ファイル"をフォームから受け取る処理
+        images = request.FILES.getlist("images")
+        if len(images) < 1:
+            photo_form.add_error("images", "写真は最低１枚登録してください")
+            photo_valid = False
+        elif len(images) > 5:
+            photo_form.add_error("images", "写真は最大５枚まで登録できます")
+            photo_valid = False
+
+        # どちらかNGなら、両方のエラーを持ったまま再描画
+        if not (item_valid and photo_valid):
             return render(
-                request, self.template_name, {"form": form, "photo_form": photo_form}
+                request,
+                self.template_name,
+                {"form": form, "photo_form": photo_form},
             )
 
-        # Itemモデルを保存（ユーザーとシーズンを設定）
+        # ここから保存処理
         item = form.save(commit=False)
-
         item.user = request.user
-
         # (TODO)seasonは暫定で以下のように設定
         item.season = 0
         item.delete_flag = False
-
-        # フォームにてimagesという名前で送信された複数"ファイル"をフォームから受け取る処理
-        images = self.request.FILES.getlist("images")
-
-        # 登録された画像ファイルの要素数
-        count = len(images)
-
-        # 写真は1枚以下だと、バリデーション失敗として編集画面へ戻る(HTMLにてエラーを表示させる設定を行う)
-        if count < 1:
-            photo_form.add_error("images", "写真は最低１枚登録してください")
-            return render(
-                request, self.template_name, {"form": form, "photo_form": photo_form}
-            )
-
-        # 写真は５枚以上だと、バリデーション失敗として編集画面へ戻る(HTMLにてエラーを表示させる設定を行う)
-        if count > 5:
-            photo_form.add_error("images", "写真は最大５枚まで登録できます")
-            return render(
-                request, self.template_name, {"form": form, "photo_form": photo_form}
-            )
-
-        # アイテムの更新情報を保存
         item.save()
+        # form.save_m2m()  # M2M があればここで
 
         # 複数画像保存 → URL 取得
         for img in images:
             # 拡張子を推定（なければ jpg など固定でもOK）
-
             ext = os.path.splitext(img.name)[1] or ".jpg"
-
             filename = f"items/{uuid.uuid4()}{ext}"
-
             # ストレージに保存
             saved_path = default_storage.save(filename, ContentFile(img.read()))
-
             # 公開URL（S3 等なら presigned の代わりに storage.url を使う想定）
             public_url = default_storage.url(saved_path)
-
             # ★フィールド名をモデルに合わせる（例：url）
             ItemPhoto.objects.create(item=item, url=public_url)
 
