@@ -18,6 +18,16 @@
     {% block extra_css %}{% endblock %}
 </head>
 <body >
+    {% if messages %}
+    <div class="container mt-3">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
     <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
         <div class="text-white p-3">
             <header>
