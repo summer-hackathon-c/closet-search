@@ -18,6 +18,7 @@
     <ul class="item-detail-list font-regular">
         <li>購入日：{{ item.purchase_date|date:"Y/m/d" }}</li>
         <li>価格：{{ item.price|to_yen }}</li>
+        <li>季節：{{ season_labels }}</li>
         <li>説明・メモ：<br>{{ item.description|default_if_none:"" }}</li>
     </ul>
     <div class="photo-list">
