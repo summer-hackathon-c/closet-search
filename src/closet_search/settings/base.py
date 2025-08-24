@@ -1,5 +1,6 @@
 # src/closet_search/settings/base.py
 from pathlib import Path
+from django.contrib.messages import constants as message_constants
 import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -31,6 +32,16 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+# Bootstrap と連携しやすいようにタグ設定（任意）
+
+MESSAGE_TAGS = {
+    message_constants.DEBUG: "secondary",
+    message_constants.INFO: "info",
+    message_constants.SUCCESS: "success",
+    message_constants.WARNING: "warning",
+    message_constants.ERROR: "danger",
+}
 
 ROOT_URLCONF = "closet_search.urls"
 

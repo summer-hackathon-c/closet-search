@@ -1,5 +1,6 @@
 import os
 import uuid
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin  # 上位に記載必要
 from django.contrib.auth.views import LoginView
 from django.contrib.auth import login, get_user_model
@@ -41,7 +42,12 @@ User = get_user_model()
 class SignUpView(CreateView):
     form_class = CustomUserCreationForm
     template_name = "registration/signup.html"
-    success_url = reverse_lazy("item-list")
+    success_url = reverse_lazy("login")
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, "登録しました！ログインしてください。")
+        return response
 
 
 # ユーザーログイン
