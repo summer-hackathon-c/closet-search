@@ -42,7 +42,7 @@ class SignUpView(CreateView):
     form_class = CustomUserCreationForm
     template_name = "registration/signup.html"
     success_url = reverse_lazy("login")
-    
+
     def form_valid(self, form):
         response = super().form_valid(form)
         messages.success(self.request, "登録しました！ログインしてください。")
