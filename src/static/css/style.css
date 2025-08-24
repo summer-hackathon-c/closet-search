@@ -1,357 +1,357 @@
-:root { 
-    --card-h: 10rem;
-    --header-h: 3.5rem;      /* 上のグローバルヘッダーの高さ */
-    --subheader-h: 4.5rem;     /* アイテム見出しの高さ（item-header） */
+:root {
+  --card-h: 10rem;
+  --header-h: 3.5rem; /* 上のグローバルヘッダーの高さ */
+  --subheader-h: 4.5rem; /* アイテム見出しの高さ（item-header） */
 }
 
 html {
-    height: 100%;
-    margin: 0;
+  height: 100%;
+  margin: 0;
 }
 
 body {
-    background-color: #F0E4D3;
-    height: 100%;
-    margin: 0;
-    padding: 0 1rem;
+  background-color: #f0e4d3;
+  height: 100%;
+  margin: 0;
+  padding: 0 1rem;
 }
 
 .wrapper {
-    min-height: 100vh;         /* 画面高いっぱい */
-    display: flex;
-    flex-direction: column;
+  min-height: 100vh; /* 画面高いっぱい */
+  display: flex;
+  flex-direction: column;
 }
 
 .header {
-    display: flex;           /* 左右を並べる */
-    align-items: center;     /* 縦中央揃え */
-    justify-content: space-between; /* 左右に分ける */
-    box-sizing: border-box;           /* 高さ=padding+border込みで固定 */
-    padding: 0 .75rem;
-    background-color: #F0E4D3;
+  display: flex; /* 左右を並べる */
+  align-items: center; /* 縦中央揃え */
+  justify-content: space-between; /* 左右に分ける */
+  box-sizing: border-box; /* 高さ=padding+border込みで固定 */
+  padding: 0 0.75rem;
+  background-color: #f0e4d3;
 
-    position: fixed;   /* ← これでガチ固定 */
-    top: 0;
-    left: 0;
-    right: 0;
-    height: var(--header-h);
-    z-index: 1000;     /* 前面に出す */
+  position: fixed; /* ← これでガチ固定 */
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--header-h);
+  z-index: 1000; /* 前面に出す */
 }
 
 .logout-link {
-    text-decoration: none;
-    color: #946C66;
+  text-decoration: none;
+  color: #946c66;
 }
 
 /* .header-right { */
-    /* メニューを増やす場合 */
-    /* display: flex;
+/* メニューを増やす場合 */
+/* display: flex;
     gap: 10px;
     align-items: center; */
 /* } */
 
 .main {
-    flex: 1 1 auto;
-    min-height: 0;
-    /* 上の2本の固定ヘッダーぶんだけ下げる */
-    padding-top: calc(var(--header-h) + var(--subheader-h));
+  flex: 1 1 auto;
+  min-height: 0;
+  /* 上の2本の固定ヘッダーぶんだけ下げる */
+  padding-top: calc(var(--header-h) + var(--subheader-h));
 }
 
 .footer {
-    color: black;
-    text-align: center;
-    padding: 1rem;
-    flex-shrink: 0;
+  color: black;
+  text-align: center;
+  padding: 1rem;
+  flex-shrink: 0;
 }
 
 .header-logo {
-    height: 2rem;
-    width: auto;
+  height: 2rem;
+  width: auto;
 }
 
 h1 {
-    font-family: "M PLUS Rounded 1c", sans-serif;
-    font-weight: 500;
-    font-style: normal;
-    font-size: 1.5rem;
-    margin-top: 0;
+  font-family: "M PLUS Rounded 1c", sans-serif;
+  font-weight: 500;
+  font-style: normal;
+  font-size: 1.5rem;
+  margin-top: 0;
 }
 
 .item-page {
-    display: flex;
-    flex-direction: column;
-    margin-top: 1rem;
-    min-height: 0;
+  display: flex;
+  flex-direction: column;
+  margin-top: 1rem;
+  min-height: 0;
 }
 
 .item-border-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #F0E4D3;
-    padding: 0.5rem 1rem;
-    position: fixed;
-    top: var(--header-h);      /* ヘッダーの直下に吸着 */
-    left: 0;
-    right: 0;
-    z-index: 10;
-    border-bottom: 1px solid #ccc;
-    height: var(--subheader-h);
-    z-index: 900;              /* header よりは低く、カードより高く */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f0e4d3;
+  padding: 0.5rem 1rem;
+  position: fixed;
+  top: var(--header-h); /* ヘッダーの直下に吸着 */
+  left: 0;
+  right: 0;
+  z-index: 10;
+  border-bottom: 1px solid #ccc;
+  height: var(--subheader-h);
+  z-index: 900; /* header よりは低く、カードより高く */
 }
 
 .item-border-left {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start; /* 左寄せ */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* 左寄せ */
 }
 
 .item-border-left h1 {
-    margin: 0; /* h1 の余白を消す */
+  margin: 0; /* h1 の余白を消す */
 }
 
 .item-count {
-    font-size: 1.1rem;
-    color: #946C66;
-    margin-top: 0.4rem;
-    margin-bottom: 0.4rem;
+  font-size: 1.1rem;
+  color: #946c66;
+  margin-top: 0.4rem;
+  margin-bottom: 0.4rem;
 }
 
 .btn-add {
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    padding: 0.4rem 0.8rem;
-    background-color: #D9A299;
-    border: none;
-    border-radius: 3rem;
-    color: #fff;
-    text-decoration: none;
-    width: 2.5rem;
-    height: 2rem;
-    text-align: center;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.4rem 0.8rem;
+  background-color: #d9a299;
+  border: none;
+  border-radius: 3rem;
+  color: #fff;
+  text-decoration: none;
+  width: 2.5rem;
+  height: 2rem;
+  text-align: center;
 }
 
 .btn-add:hover {
-    background-color: #BBA8A9;
+  background-color: #bba8a9;
 }
 
 /* indexページ */
 .item-list {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 0.4rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.4rem;
 }
 
 .item-card {
-    display: grid;
-    grid-template-columns: 1fr 1fr;   /* 左右半分 */
-    gap: 0.75rem;
-    background: #F5F5F5;
-    border: 1px solid #e5e5e5;
-    border-radius: 0.1rem;
-    padding: 0.75rem;
-    box-shadow: 0 4px 4px rgba(0,0,0,0.2);
-    text-decoration: none;
-    color: inherit;
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* 左右半分 */
+  gap: 0.75rem;
+  background: #f5f5f5;
+  border: 1px solid #e5e5e5;
+  border-radius: 0.1rem;
+  padding: 0.75rem;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.2);
+  text-decoration: none;
+  color: inherit;
 
-    height: var(--card-h);      /* ← カードの高さを固定 */
-    overflow: hidden;
+  height: var(--card-h); /* ← カードの高さを固定 */
+  overflow: hidden;
 }
 
 .item-card-left {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between; /* 上 = メタ情報 / 下 = 削除 */
-    min-height: 8rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* 上 = メタ情報 / 下 = 削除 */
+  min-height: 8rem;
 }
 
 .meta {
-    display: grid;
-    gap: 0.5rem;
-    overflow: hidden;
+  display: grid;
+  gap: 0.5rem;
+  overflow: hidden;
 }
 
 .meta-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    min-height: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  min-height: 0;
 }
 
 .label {
-    font-size: 0.85rem;
-    color: #666;
+  font-size: 0.85rem;
+  color: #666;
 }
 
 .value {
-    font-weight: 600;
+  font-weight: 600;
 }
 
 /* 右カラム：写真 */
 .item-card-right {
-    position: relative;
-    min-width: 0;
+  position: relative;
+  min-width: 0;
 }
 
 .item-photo {
-    width: 100%;
-    height: var(--card-h);
-    object-fit: cover;     /* いい感じにトリミング */
-    border-radius: 0.1rem;
+  width: 100%;
+  height: var(--card-h);
+  object-fit: cover; /* いい感じにトリミング */
+  border-radius: 0.1rem;
 }
 
 /* 削除ボタン */
 .delete-form {
-    margin-top: 0.75rem;
+  margin-top: 0.75rem;
 }
 
 .btn-delete {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.4rem 0.75rem;
-    border: 1px solid #e2e2e2;
-    background: #fff;
-    border-radius: 0.5rem;
-    cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.75rem;
+  border: 1px solid #e2e2e2;
+  background: #fff;
+  border-radius: 0.5rem;
+  cursor: pointer;
 }
 
 .btn-delete:hover {
-    background: #fdecec;         /* 薄い赤系のホバー */
-    border-color: #f3caca;
+  background: #fdecec; /* 薄い赤系のホバー */
+  border-color: #f3caca;
 }
 
 .icon-trash {
-    width: auto;
-    height: 1.2rem;
+  width: auto;
+  height: 1.2rem;
 }
 
 span {
-    font-family: "M PLUS Rounded 1c", sans-serif;
-    font-weight: 400;
-    font-style: normal;
+  font-family: "M PLUS Rounded 1c", sans-serif;
+  font-weight: 400;
+  font-style: normal;
 }
 
 /* createページ */
 .item-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #F0E4D3;
-    padding: 0.5rem 1rem;
-    position: fixed;
-    top: var(--header-h);      /* ヘッダーの直下に吸着 */
-    left: 0;
-    right: 0;
-    z-index: 10;
-    height: var(--subheader-h);
-    z-index: 900;              /* header よりは低く、カードより高く */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f0e4d3;
+  padding: 0.5rem 1rem;
+  position: fixed;
+  top: var(--header-h); /* ヘッダーの直下に吸着 */
+  left: 0;
+  right: 0;
+  z-index: 10;
+  height: var(--subheader-h);
+  z-index: 900; /* header よりは低く、カードより高く */
 }
 
 .btn-submit {
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    padding: 0.4rem 0.8rem;
-    background-color: #D9A299;
-    border: none;
-    border-radius: 3rem;
-    color: #fff;
-    text-decoration: none;
-    width: 2.5rem;
-    height: 2rem;
-    text-align: center;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.4rem 0.8rem;
+  background-color: #d9a299;
+  border: none;
+  border-radius: 3rem;
+  color: #fff;
+  text-decoration: none;
+  width: 2.5rem;
+  height: 2rem;
+  text-align: center;
 }
 
 .btn-submit:hover {
-    background-color: #BBA8A9;
+  background-color: #bba8a9;
 }
 
 .item-detail-list {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
 }
 
 .item-detail-list li {
-    margin-bottom: 0.8rem;
+  margin-bottom: 0.8rem;
 }
 
 .photo-list {
-    display: flex;
-    gap: 0.5rem;
-    overflow-x: auto;
-    padding: 0.5rem 0;
-    -webkit-overflow-scrolling: touch; /* スマホでのスクロールを滑らかに */
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding: 0.5rem 0;
+  -webkit-overflow-scrolling: touch; /* スマホでのスクロールを滑らかに */
 }
 
 .photo-list img {
-    width: 160px;
-    height: 180px;
-    object-fit: cover;
-    border-radius: 0.1rem;
-    flex-shrink: 0;  /* 縮小せず一定サイズを保つ */
+  width: 160px;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 0.1rem;
+  flex-shrink: 0; /* 縮小せず一定サイズを保つ */
 }
 
 .btn-delete-beige {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.4rem 0.75rem;
-    border: 1px solid #e2e2e2;
-    background: #F0E9DF;
-    border-radius: 0.5rem;
-    cursor: pointer;
-    margin-bottom: 1.8rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.75rem;
+  border: 1px solid #e2e2e2;
+  background: #f0e9df;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  margin-bottom: 1.8rem;
 }
 
 .detail-btn-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-    margin-top: 8rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 8rem;
 }
 
 .detail-btn-action {
-    padding: 0.6rem 1.5rem;
-    background-color: #D9A299;
-    color: #fff;
-    text-decoration: none;
-    border-radius: 3rem;
-    font-weight: bold;
-    transition: background-color 0.2s ease;
-    width: 6rem;
-    text-align: center;
+  padding: 0.6rem 1.5rem;
+  background-color: #d9a299;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 3rem;
+  font-weight: bold;
+  transition: background-color 0.2s ease;
+  width: 6rem;
+  text-align: center;
 }
 
 .btn-edit {
-    background-color: #D9A299;
-    color: #fff;
+  background-color: #d9a299;
+  color: #fff;
 }
 .btn-edit:hover {
-    background-color: #b67f75;
+  background-color: #b67f75;
 }
 
 .btn-back {
-    background-color: #F5F5F5;
-    color: #946C66;
-    border: 1px solid #946C66;
+  background-color: #f5f5f5;
+  color: #946c66;
+  border: 1px solid #946c66;
 }
 .btn-back:hover {
-    background-color: #f7f7f7;
+  background-color: #f7f7f7;
 }
 
 .font-regular {
-    font-family: "M PLUS Rounded 1c", sans-serif;
-    font-weight: 400;
-    font-style: normal;
+  font-family: "M PLUS Rounded 1c", sans-serif;
+  font-weight: 400;
+  font-style: normal;
 }
 
 .font-medium {
-    font-family: "M PLUS Rounded 1c", sans-serif;
-    font-weight: 500;
-    font-style: normal;
+  font-family: "M PLUS Rounded 1c", sans-serif;
+  font-weight: 500;
+  font-style: normal;
 }

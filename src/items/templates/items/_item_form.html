@@ -1,0 +1,42 @@
+{% load django_bootstrap5 %}
+
+<div class="form-narrow">
+    {% bootstrap_form_errors form type='non_field_errors' %}
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        {# 基本フィールド（images 以外） #}
+        {% bootstrap_form form exclude='images' %}
+
+        {# 画像アップロード（create/edit 共通） #}
+        {% if form.images %}
+            {% bootstrap_field form.images show_label=True form_group_class="mb-3" %}
+        {% endif %}
+
+        {# 既存画像のデータ置き場（編集時のみ） #}
+        {% if mode == 'edit' and photos %}
+            <div id="existing-photos" class="d-none" aria-hidden="true">
+                {% for photo in photos %}
+                    <div class="existing" data-photo-id="{{ photo.id }}" data-url="{{ photo.url }}"></div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {# プレビュー（新規＋既存すべてここに描画） #}
+        <div id="preview" class="mt-2"></div>
+
+        {# 削除指示の hidden input を詰める場所（JSが生成） #}
+        <div id="delete-bag"></div>
+
+        <div class="action-stack">
+            <button type="submit" class="btn-create">
+                {% if mode == 'edit' %}更新する{% else %}登録する{% endif %}
+            </button>
+        </div>
+    </form>
+
+    <div class="action-stack">
+        <a href="{% url 'item-list' %}" class="btn-back">戻る</a>
+    </div>
+</div>

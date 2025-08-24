@@ -4,6 +4,10 @@
 
 {% block title %}ユーザー登録{% endblock %}
 
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/signup.css' %}">
+{% endblock %}
+
 {% block content %}
 <div class="">
     <h2 class="font-regular">アカウントを作成してください</h2>
@@ -15,5 +19,14 @@
             <button type="submit" class="btn btn-primary my-btn font-regular">新規登録</button>
         </div>
     </form>
+
+    <p class="to-signup font-regular">
+        アカウントをお持ちの方は、<a href="{% url 'login' %}">ログイン画面</a>へ
+    </p>
 </div>
 {% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'js/password_eye.js' %}"></script>
+{% endblock %}    
+

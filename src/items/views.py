@@ -27,7 +27,6 @@ from .forms import (
     CustomUserCreationForm,
     LoginForm,
     ItemCreateForm,
-    PhotoUploadForm,
     ItemUpdateForm,
 )
 
@@ -42,7 +41,12 @@ User = get_user_model()
 class SignUpView(CreateView):
     form_class = CustomUserCreationForm
     template_name = "registration/signup.html"
-    success_url = reverse_lazy("item-list")
+    success_url = reverse_lazy("login")
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, "登録しました！ログインしてください。")
+        return response
 
 
 # ユーザーログイン
@@ -111,73 +115,48 @@ class ItemCreateView(LoginRequiredMixin, View):
             self.template_name,
             {
                 "form": ItemCreateForm(),  # アイテム登録フォーム
-                "photo_form": PhotoUploadForm(),  # 画像アップロードフォーム
             },
         )
 
     # POSTリクエスト（登録処理）
     def post(self, request, *args, **kwargs):
         # 送信データをフォームにバインド
-        form = ItemCreateForm(request.POST)
-        photo_form = PhotoUploadForm(request.POST, request.FILES)
+        form = ItemCreateForm(request.POST, request.FILES)
 
-        # フォームが無効な場合はエラーを表示して再描画
-        if not form.is_valid() or not photo_form.is_valid():
-            messages.error(
-                request,
-                f"ItemCreateForm: {form.errors} / PhotoForm: {photo_form.errors}",
-            )
+        # imagesの枚数チェック
+        images = request.FILES.getlist("images")
+        item_valid = form.is_valid()
+        if len(images) < 1:
+            form.add_error("images", "写真は最低１枚登録してください")
+        elif len(images) > 5:
+            form.add_error("images", "写真は最大５枚まで登録できます")
+
+        # formにエラーが一つでもあれば再描画
+        if not item_valid or form.errors:
             return render(
-                request, self.template_name, {"form": form, "photo_form": photo_form}
+                request,
+                self.template_name,
+                {"form": form},
             )
 
-        # Itemモデルを保存（ユーザーとシーズンを設定）
+        # ここから保存処理
         item = form.save(commit=False)
-
         item.user = request.user
-
         # (TODO)seasonは暫定で以下のように設定
         item.season = 0
         item.delete_flag = False
         item.save()
-
-        # フォームにてimagesという名前で送信された複数"ファイル"をフォームから受け取る処理
-        images = self.request.FILES.getlist("images")
-
-        # 登録された画像ファイルの要素数
-        count = len(images)
-
-        # 写真は1枚以下だと、バリデーション失敗として編集画面へ戻る(HTMLにてエラーを表示させる設定を行う)
-        if count < 1:
-            photo_form.add_error("images", "写真は最低１枚登録してください")
-            return render(
-                request, self.template_name, {"form": form, "photo_form": photo_form}
-            )
-
-        # 写真は５枚以上だと、バリデーション失敗として編集画面へ戻る(HTMLにてエラーを表示させる設定を行う)
-        if count > 5:
-            photo_form.add_error("images", "写真は最大５枚まで登録できます")
-            return render(
-                request, self.template_name, {"form": form, "photo_form": photo_form}
-            )
-
-        # M2M があればここで
-        form.save_m2m()
+        # form.save_m2m()  # M2M があればここで
 
         # 複数画像保存 → URL 取得
         for img in images:
             # 拡張子を推定（なければ jpg など固定でもOK）
-
             ext = os.path.splitext(img.name)[1] or ".jpg"
-
             filename = f"items/{uuid.uuid4()}{ext}"
-
             # ストレージに保存
             saved_path = default_storage.save(filename, ContentFile(img.read()))
-
             # 公開URL（S3 等なら presigned の代わりに storage.url を使う想定）
             public_url = default_storage.url(saved_path)
-
             # ★フィールド名をモデルに合わせる（例：url）
             ItemPhoto.objects.create(item=item, url=public_url)
 
@@ -229,7 +208,6 @@ class ItemUpdateView(LoginRequiredMixin, UpdateView):
     # Itemモデルへ写真フィールドがなく、かつUI上で画像アップロード欄のみを分離表示しわかりやすくするため。
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["photo_form"] = self.get_form()
         context["photos"] = (
             self.object.itemphoto_set.all()
         )  # ItemPhotoモデルを参照し情報を取得
@@ -240,6 +218,12 @@ class ItemUpdateView(LoginRequiredMixin, UpdateView):
         user = self.request.user
 
         return Item.objects.filter(user=user, delete_flag=False)
+
+    # requestをフォームに渡す
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["request"] = self.request  # clean()がdelete_photosを参照できるように
+        return kwargs
 
     # ユーザーがフォームを送信後、バリデーション通過後に行う保存や画面遷移処理のカスタマイズ
     def form_valid(self, form):
@@ -254,35 +238,13 @@ class ItemUpdateView(LoginRequiredMixin, UpdateView):
         # 加工後の内容を保存
         item.save()
 
-        # フォームにてimagesという名前で送信された複数"ファイル"をフォームから受け取る処理
-        images = self.request.FILES.getlist("images")
-
-        # フォーム送信時に複数の削除対象IDを取得するための処理
+        # 既存の削除
         delete_ids = self.request.POST.getlist("delete_photos")
-
-        # 対象アイテムのItemPhotoモデルへ紐づくすべての写真の枚数を数える（削除対象写真は除く)
-        remaining_count = item.itemphoto_set.exclude(id__in=delete_ids).count()
-        # 新しく登録された画像ファイルの要素数
-        new_count = len(images)
-        # 画像の総枚数を計算
-        total_count = remaining_count + new_count
-
-        # 写真は1枚以下だと、バリデーション失敗として編集画面へ戻る(HTMLにてエラーを表示させる設定を行う)
-        if total_count < 1:
-            form.add_error("images", "写真は最低１枚登録してください")
-            return self.form_invalid(form)
-
-        # 写真は５枚以上だと、バリデーション失敗として編集画面へ戻る(HTMLにてエラーを表示させる設定を行う)
-        if total_count > 5:
-            form.add_error("images", "写真は最大５枚まで登録できます")
-            return self.form_invalid(form)
-
-        # 削除対象IDを一括削除
         if delete_ids:
             ItemPhoto.objects.filter(id__in=delete_ids, item=item).delete()
 
-        # ユーザーがアップロードした画像をサーバーに保存し、公開URLを取得
-        for img in images:
+        # 新規の保存
+        for img in self.request.FILES.getlist("images"):
             # 画像の拡張子を取得し、空欄だった場合は.jpgを使用
             ext = os.path.splitext(img.name)[1] or ".jpg"
 
@@ -297,9 +259,6 @@ class ItemUpdateView(LoginRequiredMixin, UpdateView):
 
             # ItemPhotoモデルへ、itemへ紐づく画像のURLを登録する
             ItemPhoto.objects.create(item=item, url=public_url)
-
-        # アイテムの情報をデータベースの最新状態へ上書きする
-        item.refresh_from_db()
 
         # 詳細画面へリダイレクト
         return redirect("item-detail", pk=item.pk)
