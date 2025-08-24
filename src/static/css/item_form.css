@@ -9,6 +9,7 @@
   font-family: "M PLUS Rounded 1c", sans-serif;
   font-weight: 400;
   font-style: normal;
+  overflow-x: hidden; /* 画面横はみ出し防止 */
 }
 
 /* フォーム幅を少し狭く＆中央寄せ */
@@ -31,9 +32,8 @@
   border: 1px solid transparent;
   text-decoration: none;
   cursor: pointer;
-  transition: background-color 0.2s, border-color 0.2s, color 0.2s,
-    transform 0.02s;
-  width: 8rem; /* 同じ横幅に */
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s, transform 0.02s;
+  width: 8rem; /* 同じ横幅に（長文で崩れるなら min-width に変更） */
 }
 
 /* 登録ボタン */
@@ -41,7 +41,6 @@
   background-color: #d9a299;
   color: #fff;
   border-color: #d9a299;
-  margin-top: 2rem; /* 必要なければ削除して .action-stack で調整 */
 }
 .items-form-page .btn-create:hover,
 .items-form-page .btn-create:focus {
@@ -52,8 +51,8 @@
 /* 戻るボタン */
 .items-form-page .btn-back {
   background-color: #f5f5f5;
-  color: #946c66;
-  border: 1px solid #946c66;
+  color: var(--brand-prim);
+  border: 1px solid var(--brand-prim);
 }
 .items-form-page .btn-back:hover,
 .items-form-page .btn-back:focus {
@@ -67,38 +66,44 @@
 }
 .items-form-page .btn-create:focus-visible,
 .items-form-page .btn-back:focus-visible {
-  outline: 2px solid #946c66;
+  outline: 2px solid var(--brand-prim);
   outline-offset: 2px;
 }
 
-/* 縦積み＆中央寄せ */
+/* 縦積み＆中央寄せ（送信ボタン行・戻る行） */
 .items-form-page .action-stack {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  margin-top: 8px;
+  justify-content: center;   /* 横中央 */
+  align-items: center;       /* 高さのばらつき吸収 */
+  gap: 12px;
+  margin-top: 16px;
+  flex-wrap: wrap;           /* 狭い画面で折り返し */
+  flex-direction: row;       /* ボタンが縦積み希望なら column に */
 }
 
-/* プレビュー（スマホは2列） */
+/* プレビュー（スマホは2列→広い画面で4列） */
 .items-form-page #preview {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
   margin-top: 8px;
 }
+@media (min-width: 640px) {
+  .items-form-page #preview {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
 
-/* 画像枠（角丸とオーバーレイ用） */
+/* 画像カード */
 .items-form-page #preview .preview-item {
   position: relative;
   border-radius: 8px;
   overflow: hidden; /* ×ボタンを内側に収める */
+  box-shadow: 0 2px 8px rgba(0,0,0,.06);
 }
-
-/* サムネ（正方形トリミング） */
 .items-form-page #preview .preview-img {
   width: 100%;
-  aspect-ratio: 1/1;
+  aspect-ratio: 1 / 1;   /* 正方形 */
   object-fit: cover;
   display: block;
 }
@@ -106,24 +111,25 @@
 /* ×ボタン */
 .items-form-page #preview .preview-remove {
   position: absolute;
-  top: 4px;
-  right: 4px;
-  width: 24px;
-  height: 24px;
+  top: 6px;
+  right: 6px;
+  width: 28px;
+  height: 28px;
   border: none;
   border-radius: 9999px;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0,0,0,.6);
   color: #fff;
   line-height: 1;
+  font-size: 18px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
 }
 .items-form-page #preview .preview-remove:hover {
-  background: rgba(0, 0, 0, 0.75);
+  background: rgba(0,0,0,.75);
 }
 .items-form-page #preview .preview-remove:focus-visible {
-  outline: 2px solid #946c66;
+  outline: 2px solid var(--brand-prim);
   outline-offset: 2px;
 }
