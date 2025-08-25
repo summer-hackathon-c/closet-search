@@ -10,12 +10,11 @@ class StaticStorage(ManifestFilesMixin, S3Boto3Storage):
     - 1年キャッシュ + immutable（CloudFrontで効く）
     - 同名上書き許可（Manifestが新名を作るのでOK）
     """
+
     location = "static"
     default_acl = None  # OAC運用なら private でOK
     file_overwrite = True
-    object_parameters = {
-        "CacheControl": "public, max-age=31536000, immutable"
-    }
+    object_parameters = {"CacheControl": "public, max-age=31536000, immutable"}
 
 
 class MediaStorage(S3Boto3Storage):
@@ -24,9 +23,8 @@ class MediaStorage(S3Boto3Storage):
     - 上書き防止
     - 1日キャッシュ
     """
+
     location = "media"
     default_acl = None
     file_overwrite = False
-    object_parameters = {
-        "CacheControl": "public, max-age=86400"
-    }
+    object_parameters = {"CacheControl": "public, max-age=86400"}
