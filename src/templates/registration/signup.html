@@ -21,12 +21,13 @@
     </form>
 
     <p class="to-signup font-regular">
-        アカウントをお持ちの方は、<a href="{% url 'login' %}">ログイン画面</a>へ
+        アカウントをお持ちの方は、<br>
+        <a href="{% url 'login' %}">ログイン画面</a>へ
     </p>
 </div>
 {% endblock %}
 
 {% block extra_js %}
     <script src="{% static 'js/password_eye.js' %}"></script>
-{% endblock %}    
+{% endblock %}
 
