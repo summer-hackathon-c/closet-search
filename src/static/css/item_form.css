@@ -133,3 +133,21 @@
   outline: 2px solid var(--brand-prim);
   outline-offset: 2px;
 }
+
+/* ネイティブUIを生かし、左寄せに統一 */
+input[type="date"] {
+  appearance: auto;
+  -webkit-appearance: auto; /* iOS */
+  text-align: left;
+}
+
+/* iOS Safari の内部編集領域も左寄せ */
+input[type="date"]::-webkit-datetime-edit,
+input[type="date"]::-webkit-date-and-time-value {
+  text-align: left;
+}
+
+/* 念のため、中央寄せ化している既存指定を打ち消す */
+.form-control[type="date"] {
+  text-align: left !important;
+}

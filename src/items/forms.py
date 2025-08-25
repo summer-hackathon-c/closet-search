@@ -188,6 +188,7 @@ class ItemUpdateForm(forms.ModelForm):
                 attrs={
                     "class": "form-control",  # CSSにて使用するクラス
                     # "placeholder": "2025-01-01",
+                    "type": "date",  # カレンダー形式の選択
                 }
             ),
             "price": forms.NumberInput(
