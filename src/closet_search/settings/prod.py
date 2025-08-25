@@ -41,8 +41,8 @@ AWS_DEFAULT_ACL = None
 # 署名・公開URLの推奨
 AWS_S3_SIGNATURE_VERSION = "s3v4"
 AWS_DEFAULT_ACL = None
-AWS_QUERYSTRING_AUTH = False       # 署名付きクエリを付けない（キャッシュ効く）
-AWS_S3_FILE_OVERWRITE = False      # 同名アップ時の上書き防止（任意）
+AWS_QUERYSTRING_AUTH = False  # 署名付きクエリを付けない（キャッシュ効く）
+AWS_S3_FILE_OVERWRITE = False  # 同名アップ時の上書き防止（任意）
 
 # Cache-Control（静的は長期 / メディアは短め）
 AWS_S3_OBJECT_PARAMETERS = {
