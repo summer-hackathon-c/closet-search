@@ -14,7 +14,6 @@ class StaticStorage(ManifestFilesMixin, S3Boto3Storage):
     location = "static"
     default_acl = None  # OAC運用なら private でOK
     file_overwrite = True
-    custom_domain = True  # settingsの AWS_S3_CUSTOM_DOMAIN を使う
     object_parameters = {"CacheControl": "public, max-age=31536000, immutable"}
 
 
@@ -28,5 +27,4 @@ class MediaStorage(S3Boto3Storage):
     location = "media"
     default_acl = None
     file_overwrite = False
-    custom_domain = True
     object_parameters = {"CacheControl": "public, max-age=86400"}
