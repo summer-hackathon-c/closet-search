@@ -14,7 +14,6 @@
 
     <form method="post">
         {% csrf_token %}
-        {% comment %} {{ form.as_p }} {% endcomment %}
         {% bootstrap_form form %}
 
         <div class="container mt-5">
@@ -23,7 +22,8 @@
     </form>
 
     <p class="to-login font-regular">
-        アカウントをお持ちでない方は、<a href="{% url 'signup' %}">新規登録</a>へ
+        アカウントをお持ちでない方は、<br>
+        <a href="{% url 'signup' %}">新規登録</a>へ
     </p>
 </div>
 {% endblock %}
