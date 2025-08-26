@@ -110,7 +110,7 @@ class ItemCreateForm(forms.ModelForm):
                 "type": "text",
                 "autocomplete": "off",
                 "placeholder": "YYYY-MM-DD",
-            }
+            },
         ),
         error_messages={"invalid": "日付は YYYY-MM-DD 形式で入力してください。"},
     )
@@ -171,7 +171,7 @@ class ItemUpdateForm(forms.ModelForm):
                 "type": "text",
                 "autocomplete": "off",
                 "placeholder": "YYYY-MM-DD",
-            }
+            },
         ),
         error_messages={"invalid": "日付は YYYY-MM-DD 形式で入力してください。"},
     )
