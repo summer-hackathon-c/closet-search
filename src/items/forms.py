@@ -140,7 +140,7 @@ class ItemCreateForm(forms.ModelForm):
                 attrs={
                     "class": "form-control",  # CSSにて使用するクラス
                     "rows": 4,  # 初期表示で4行文の高さに設定
-                    "placeholder": "例：〇〇(店名,場所）にて購入",
+                    "placeholder": "例：二子玉川で購入。かわいい！！",
                 }
             ),
         }
@@ -194,7 +194,7 @@ class ItemUpdateForm(forms.ModelForm):
             "price": forms.NumberInput(
                 attrs={
                     "class": "form-control",  # CSSにて使用するクラス
-                    # "placeholder": "2000",
+                    "placeholder": "2000",
                     "min": "0",  # マイナスの価格入力がブラウザ上で禁止される
                 }
             ),
