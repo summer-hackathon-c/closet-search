@@ -10,12 +10,13 @@
 {% endblock %}
 
 {% block extra_js %}
+    <script src="{% static 'js/datepicker.js' %}"></script>
     <script src="{% static 'js/preview.js' %}"></script>
 {% endblock %}
 
 {% block content %}
 <div class="item-page items-form-page">
-    <div class="item-header">
+    <div class="item-border-header">
         <h1>アイテム新規登録</h1>
     </div>
     {% include "items/_item_form.html" with mode="create" %}

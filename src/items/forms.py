@@ -98,6 +98,23 @@ class LoginForm(forms.Form):
 
 # アイテム新規登録
 class ItemCreateForm(forms.ModelForm):
+    # スマホの表示を合わせるため、type="text"+flatpickr化
+    purchase_date = forms.DateField(
+        label="購入日",
+        required=True,
+        input_formats=["%Y-%m-%d"],
+        widget=forms.DateInput(
+            format="%Y-%m-%d",
+            attrs={
+                "class": "form-control datepicker",
+                "type": "text",
+                "autocomplete": "off",
+                "placeholder": "YYYY-MM-DD",
+            },
+        ),
+        error_messages={"invalid": "日付は YYYY-MM-DD 形式で入力してください。"},
+    )
+
     # createでも同じUIを使えるように追加
     # 画像をアップロードするためのフォーム（Itemモデルにフィールドなくても問題なし）
     images = forms.FileField(
@@ -123,12 +140,6 @@ class ItemCreateForm(forms.ModelForm):
 
         # 入力欄のカスタマイズ
         widgets = {
-            "purchase_date": forms.DateInput(
-                attrs={
-                    "class": "form-control",  # CSSにて使用するクラス
-                    "type": "date",  # カレンダー形式の選択
-                }
-            ),
             "price": forms.NumberInput(
                 attrs={
                     "class": "form-control",  # CSSにて使用するクラス
@@ -148,6 +159,22 @@ class ItemCreateForm(forms.ModelForm):
 
 # アイテム編集フォーム
 class ItemUpdateForm(forms.ModelForm):
+    # スマホの表示を合わせるため、type="text"+flatpickr化
+    purchase_date = forms.DateField(
+        label="購入日",
+        required=True,
+        input_formats=["%Y-%m-%d"],
+        widget=forms.DateInput(
+            format="%Y-%m-%d",
+            attrs={
+                "class": "form-control datepicker",
+                "type": "text",
+                "autocomplete": "off",
+                "placeholder": "YYYY-MM-DD",
+            },
+        ),
+        error_messages={"invalid": "日付は YYYY-MM-DD 形式で入力してください。"},
+    )
     # 画像をアップロードするためのフォーム（Itemモデルにフィールドなくても問題なし）
     images = forms.FileField(
         widget=forms.ClearableFileInput(
@@ -184,13 +211,6 @@ class ItemUpdateForm(forms.ModelForm):
         # 入力欄のカスタマイズ
         #  Updateのため、未入力が有り得るdescriptionのみplaceholder表示
         widgets = {
-            "purchase_date": forms.DateInput(
-                attrs={
-                    "class": "form-control",  # CSSにて使用するクラス
-                    # "placeholder": "2025-01-01",
-                    "type": "date",  # カレンダー形式の選択
-                }
-            ),
             "price": forms.NumberInput(
                 attrs={
                     "class": "form-control",  # CSSにて使用するクラス
