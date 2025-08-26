@@ -29,7 +29,7 @@ def healthcheck(request):
 
 
 urlpatterns = [
-    path("healthz/", healthcheck),  # ターゲットグループのヘルスチェック対策
+    path("healthz", healthcheck),  # ターゲットグループのヘルスチェック対策
     path("admin/", admin.site.urls),
     path("", include("items.urls")),
 ]
