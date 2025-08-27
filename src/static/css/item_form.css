@@ -133,3 +133,14 @@
   outline: 2px solid var(--brand-prim);
   outline-offset: 2px;
 }
+
+/* flexの子要素はみ出し対策（Bootstrap .row 直下に効かせる） */
+.row > * { min-width: 0; }
+
+/* 入力幅とiOSのズーム抑止 */
+input.form-control.datepicker {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  font-size: 16px; /* iOSのフォーカス自動ズーム回避 */
+}
