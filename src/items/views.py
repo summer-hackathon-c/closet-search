@@ -163,8 +163,7 @@ class ItemCreateView(LoginRequiredMixin, View):
             saved_path = default_storage.save(filename, ContentFile(img.read()))
             # 公開URL（S3 等なら presigned の代わりに storage.url を使う想定）
             public_url = default_storage.url(saved_path)
-            # ★フ
-            # ィールド名をモデルに合わせる（例：url）
+            # ★フィールド名をモデルに合わせる（例：url）
             ItemPhoto.objects.create(item=item, url=public_url)
 
         # 一覧ページへリダイレクト
