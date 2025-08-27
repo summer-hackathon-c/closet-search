@@ -16,9 +16,9 @@ DATABASES = {
         "HOST": os.environ["DB_HOST"],
         "PORT": os.getenv("DB_PORT", "3306"),
         "OPTIONS": {
-             "charset": "utf8mb4",
-             "init_command": "SET NAMES 'utf8mb4' COLLATE 'utf8mb4_unicode_ci'",
-         },
+            "charset": "utf8mb4",
+            "init_command": "SET NAMES 'utf8mb4' COLLATE 'utf8mb4_unicode_ci'",
+        },
     },
     "replica": {
         "ENGINE": "django.db.backends.mysql",
@@ -28,9 +28,9 @@ DATABASES = {
         "HOST": os.environ["DB_HOST_REPLICA"],
         "PORT": os.getenv("DB_PORT", "3306"),
         "OPTIONS": {
-             "charset": "utf8mb4",
-             "init_command": "SET NAMES 'utf8mb4' COLLATE 'utf8mb4_unicode_ci'",
-         },
+            "charset": "utf8mb4",
+            "init_command": "SET NAMES 'utf8mb4' COLLATE 'utf8mb4_unicode_ci'",
+        },
     },
 }
 DATABASE_ROUTERS = ["closet_search.db_routers.PrimaryReplicaRouter"]
