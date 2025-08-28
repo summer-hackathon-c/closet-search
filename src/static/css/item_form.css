@@ -148,7 +148,7 @@ input.form-control.datepicker {
 /* 季節チェックボックスのグループを横並びに */
 .season-checkbox-group {
   display: flex;
-  gap: 0.5rem;
+  gap: 1rem;
 }
 
 /* 各季節のラベルを枠付きのボタン風に */
@@ -156,7 +156,7 @@ input.form-control.datepicker {
   display: flex;
   align-items: center;
   gap: 0.25rem; /* チェックボックスと文字の間 */
-  padding: 0.4rem 0.8rem;
+  padding: 0.6rem 1rem;
   border: 1px solid #ccc; 
   border-radius: 6px;      /* 少し角丸 */
   cursor: pointer;
