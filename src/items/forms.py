@@ -258,3 +258,56 @@ class ItemUpdateForm(forms.ModelForm):
             self.add_error("images", "写真は最大５枚まで登録できます")
 
         return cleaned
+
+
+# 季節タグの作成フォーム
+class SeasonsSelectForm(forms.Form):
+    # ビット演算にて定数の定義
+    SEASON_SPRING = 1  # 0001
+    SEASON_SUMMER = 2  # 0010
+    SEASON_AUTUMN = 4  # 0100
+    SEASON_WINTER = 8  # 1000
+
+    # テンプレートにて使用
+    SEASON_FLAGS = [
+        (SEASON_SPRING, "春"),
+        (SEASON_SUMMER, "夏"),
+        (SEASON_AUTUMN, "秋"),
+        (SEASON_WINTER, "冬"),
+    ]
+
+    # チェックボックスの定義
+    # BoolianFieldはチェックボックス、required=Falseにて未選択でもエラーにならない。
+    spring = forms.BooleanField(label="春", required=False)
+    summer = forms.BooleanField(label="夏", required=False)
+    autumn = forms.BooleanField(label="秋", required=False)
+    winter = forms.BooleanField(label="冬", required=False)
+
+    # 最低１つは選択しなければ、エラーが出るように定義
+    # 親クラスのclean関数を上書き。フォーム全体をまとめてチェックするための関数。
+    def clean(self):
+        cleaned_data = super().clean()  # バリデーション済のデータを取得
+        selected = [
+            cleaned_data.get("spring"),
+            cleaned_data.get("summer"),
+            cleaned_data.get("autumn"),
+            cleaned_data.get("winter"),
+        ]
+        if not any(selected):
+            raise forms.ValidationError("季節は最低一つ選択してください")
+        return cleaned_data
+
+    # ユーザーが選択した季節を一つの数値にまとめて返す定義
+    # 最初にValue=0と定義することによって、何も選ばれていない状態を作る。
+    # バリデーション後、フォームに追加された値を取り出す。
+    def get_season_value(self):
+        value = 0
+        if self.cleaned_data.get("spring"):
+            value |= self.SEASON_SPRING
+        if self.cleaned_data.get("summer"):
+            value |= self.SEASON_SUMMER
+        if self.cleaned_data.get("autumn"):
+            value |= self.SEASON_AUTUMN
+        if self.cleaned_data.get("winter"):
+            value |= self.SEASON_WINTER
+        return value

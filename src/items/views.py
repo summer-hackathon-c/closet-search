@@ -28,6 +28,7 @@ from .forms import (
     LoginForm,
     ItemCreateForm,
     ItemUpdateForm,
+    SeasonsSelectForm,
 )
 
 # from django.forms.models import model_to_dict
@@ -115,6 +116,7 @@ class ItemCreateView(LoginRequiredMixin, View):
             self.template_name,
             {
                 "form": ItemCreateForm(),  # アイテム登録フォーム
+                "season_form": SeasonsSelectForm(),  # 季節タグ登録フォーム
             },
         )
 
@@ -122,6 +124,7 @@ class ItemCreateView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         # 送信データをフォームにバインド
         form = ItemCreateForm(request.POST, request.FILES)
+        season_form = SeasonsSelectForm(request.POST)
 
         # imagesの枚数チェック
         images = request.FILES.getlist("images")
@@ -131,22 +134,25 @@ class ItemCreateView(LoginRequiredMixin, View):
         elif len(images) > 5:
             form.add_error("images", "写真は最大５枚まで登録できます")
 
-        # formにエラーが一つでもあれば再描画
-        if not item_valid or form.errors:
+        season_valid = season_form.is_valid()
+
+        # どちらかNGなら、両方のエラーを持ったまま再描画
+        if not (item_valid and season_valid) or form.errors or season_form.errors:
             return render(
                 request,
                 self.template_name,
-                {"form": form},
+                {
+                    "form": form,
+                    "season_form": season_form,
+                },
             )
 
         # ここから保存処理
         item = form.save(commit=False)
         item.user = request.user
-        # (TODO)seasonは暫定で以下のように設定
-        item.season = 0
+        item.season = season_form.get_season_value()
         item.delete_flag = False
         item.save()
-        # form.save_m2m()  # M2M があればここで
 
         # 複数画像保存 → URL 取得
         for img in images:
@@ -177,6 +183,19 @@ class ItemDetailView(LoginRequiredMixin, DetailView):
             user=user, delete_flag=False
         )  # 削除されていないアイテム
 
+    # テンプレートへ渡す表示用データ（コンテキスト）をカスタマイズ。
+    # get_context_dataをオーバーライドしている。
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        item = self.get_object()
+        labels = [
+            label
+            for value, label in SeasonsSelectForm.SEASON_FLAGS
+            if item.season & value
+        ]
+        context["season_labels"] = labels
+        return context
+
 
 # アイテム削除機能
 class ItemDeleteView(LoginRequiredMixin, DeleteView):
@@ -204,13 +223,19 @@ class ItemUpdateView(LoginRequiredMixin, UpdateView):
     form_class = ItemUpdateForm
     context_object_name = "item"
 
-    # テンプレートへ渡す追加データを定義
-    # Itemモデルへ写真フィールドがなく、かつUI上で画像アップロード欄のみを分離表示しわかりやすくするため。
+    # テンプレートへデータを定義（オーバーライド）
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["photos"] = (
-            self.object.itemphoto_set.all()
-        )  # ItemPhotoモデルを参照し情報を取得
+        # すでに保存されているアイテムの季節情報（整数）をもとに、チェックボックスの初期状態を決定
+        season_initial = {
+            "spring": bool(self.object.season & SeasonsSelectForm.SEASON_SPRING),
+            "summer": bool(self.object.season & SeasonsSelectForm.SEASON_SUMMER),
+            "autumn": bool(self.object.season & SeasonsSelectForm.SEASON_AUTUMN),
+            "winter": bool(self.object.season & SeasonsSelectForm.SEASON_WINTER),
+        }
+        context["season_form"] = SeasonsSelectForm(initial=season_initial)
+        # ItemPhotoモデルを参照し情報を取得
+        context["photos"] = self.object.itemphoto_set.all()
         return context
 
     # ログインしているユーザーに紐づく削除されていないアイテムを抽出
@@ -230,6 +255,15 @@ class ItemUpdateView(LoginRequiredMixin, UpdateView):
         # フォームから送られてきたデータをもとにitemオブジェクトを作成
         # 内容を加工後保存するため、一時保存。
         item = form.save(commit=False)
+
+        # 入力に誤りがあった場合に呼び出される。form_invalidへオーバーライド
+        season_form = SeasonsSelectForm(self.request.POST)
+        if not season_form.is_valid():
+            context = self.get_context_data(form=form, season_form=season_form)
+            context["season_form"] = season_form
+            return self.render_to_response(context)
+
+        item.season = season_form.get_season_value()
 
         # description欄に記載がなければ、空文字にして表示。（Noneの表示を防ぐ）
         if item.description is None:

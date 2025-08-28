@@ -19,6 +19,17 @@
         <li>購入日：{{ item.purchase_date|date:"Y/m/d" }}</li>
         <li>価格：{{ item.price|to_yen }}</li>
         <li>説明・メモ：<br>{{ item.description|default_if_none:"" }}</li>
+        <li>季節：
+            {% if season_labels %}
+                <span class="season-pills">
+                    {% for label in season_labels %}
+                        <span class="season-pill">{{ label }}</span>
+                    {% endfor %}
+                </span>
+            {% else %}
+                <span class="text-muted">（未設定）</span>
+            {% endif %}
+        </li>
     </ul>
     <div class="photo-list">
         {% for p in item.itemphoto_set.all %}

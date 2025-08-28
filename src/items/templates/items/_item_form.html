@@ -9,6 +9,29 @@
         {# 基本フィールド（images 以外） #}
         {% bootstrap_form form exclude='images' %}
 
+        {# 季節選択フォーム #}
+        <div class="mb-3 season-checkbox-group">
+            <label class="season-option">
+                {{ season_form.spring }} 春
+            </label>
+            <label class="season-option">
+                {{ season_form.summer }} 夏
+            </label>
+            <label class="season-option">
+                {{ season_form.autumn }} 秋
+            </label>
+            <label class="season-option">
+                {{ season_form.winter }} 冬
+            </label>
+        </div>
+
+        {% if season_form.non_field_errors %}
+            <div class="alert alert-danger mt-2">
+                {{ season_form.non_field_errors }}
+            </div>
+        {% endif %}
+        
+        
         {# 画像アップロード（create/edit 共通） #}
         {% if form.images %}
             {% bootstrap_field form.images show_label=True form_group_class="mb-3" %}
