@@ -344,6 +344,23 @@ span {
   background-color: #f7f7f7;
 }
 
+/* 詳細表示用：季節の枠 */
+.season-pills {
+  display: inline-flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  vertical-align: middle;
+}
+.season-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.4rem 0.8rem;
+  border: 1px solid #ccc;   /* 薄いグレー枠 */
+  border-radius: 6px;       /* 少し角丸 */
+  background-color: #fff;   /* 白背景 */
+  font-size: 0.95rem;
+}
+
 .font-regular {
   font-family: "M PLUS Rounded 1c", sans-serif;
   font-weight: 400;

@@ -144,3 +144,36 @@ input.form-control.datepicker {
   box-sizing: border-box;
   font-size: 16px; /* iOSのフォーカス自動ズーム回避 */
 }
+
+/* 季節チェックボックスのグループを横並びに */
+.season-checkbox-group {
+  display: flex;
+  gap: 1rem;
+}
+
+/* 各季節のラベルを枠付きのボタン風に */
+.season-option {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem; /* チェックボックスと文字の間 */
+  padding: 0.6rem 1rem;
+  border: 1px solid #ccc; 
+  border-radius: 6px;      /* 少し角丸 */
+  cursor: pointer;
+  user-select: none;
+  font-size: 0.95rem;
+  background-color: #fff;
+}
+
+/* チェックされた時の見た目を少し強調 */
+.season-option input[type="checkbox"]:checked + span {
+  font-weight: bold;
+  color: #333;
+}
+.season-option input[type="checkbox"]:checked {
+  accent-color: #8B5A50; /* お好きなブランドカラーに */
+}
+
+.season-option input[type="checkbox"] {
+  accent-color: #c7c7c7; /* 薄めの黒（例: #666 や #999） */
+}
