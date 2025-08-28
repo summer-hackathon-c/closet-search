@@ -2,6 +2,17 @@
 
 https://style-log.com/
 
+## 💁‍♂️テストユーザー
+
+email
+```bash
+test@example.com
+```
+password
+```
+test1234
+```
+
 ## 📦 必要要件
 Django + Docker を使った開発環境です。
 
