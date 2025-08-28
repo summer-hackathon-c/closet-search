@@ -193,7 +193,7 @@ class ItemDetailView(LoginRequiredMixin, DetailView):
             for value, label in SeasonsSelectForm.SEASON_FLAGS
             if item.season & value
         ]
-        context["season_labels"] = "・".join(labels)
+        context["season_labels"] = labels
         return context
 
 
