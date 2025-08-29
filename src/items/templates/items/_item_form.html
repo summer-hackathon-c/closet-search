@@ -60,6 +60,10 @@
     </form>
 
     <div class="action-stack">
-        <a href="{% url 'item-list' %}" class="btn-back">戻る</a>
+        {% if mode == 'edit' %}
+            <a href="{% url 'item-detail' object.pk %}" class="btn-back">戻る</a>
+        {% else %}
+            <a href="{% url 'item-list' %}" class="btn-back">戻る</a>
+        {% endif %}
     </div>
 </div>
